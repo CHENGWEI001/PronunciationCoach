@@ -645,6 +645,18 @@
             const h = articulatorCanvas.height;
             ctx.clearRect(0, 0, w, h);
 
+            // 1. Faint background facial silhouette for anatomical context (facing left)
+            ctx.strokeStyle = 'rgba(255, 255, 255, 0.03)';
+            ctx.lineWidth = 2;
+            ctx.beginPath();
+            ctx.moveTo(40, 10); // Forehead
+            ctx.quadraticCurveTo(45, 25, 45, 35); // Nose bridge
+            ctx.quadraticCurveTo(25, 45, 48, 55); // Nose tip & under-nose
+            ctx.moveTo(48, 125); // Under lower lip
+            ctx.quadraticCurveTo(35, 140, 70, 175); // Chin & Jaw
+            ctx.lineTo(110, 185); // Neck
+            ctx.stroke();
+
             // Persistent Context Labels for Clarity
             ctx.font = "bold 9px Inter, sans-serif";
             ctx.fillStyle = "#64748b";
@@ -675,6 +687,61 @@
             ctx.quadraticCurveTo(60, 190, 140, 160); 
             ctx.stroke();
 
+            // Set up target zone parameters for visual guidance
+            let targetX = 0, targetY = 0, targetLabel = "", isClose = false;
+            let animOffset = Math.sin(phase) * 8;
+
+            if (type === 'tongue-tip') {
+                targetX = 105;
+                targetY = 60;
+                targetLabel = "Alveolar Ridge";
+                isClose = (animOffset < -4);
+            } else if (type === 'lips') {
+                targetX = 62;
+                targetY = 90;
+                targetLabel = "Lips";
+                isClose = (Math.sin(phase) > 0.5);
+            } else if (type === 'tongue-back') {
+                targetX = 165;
+                targetY = 65;
+                targetLabel = "Velum";
+                isClose = (animOffset < -4);
+            } else if (type === 'dental') {
+                targetX = 88;
+                targetY = 95;
+                targetLabel = "Teeth Gap";
+                isClose = (animOffset > 4);
+            }
+
+            // Draw Target Zone Pulse & Indicator
+            if (targetX > 0) {
+                let pulseRadius = 6 + Math.sin(phase * 2) * 2;
+                ctx.beginPath();
+                ctx.arc(targetX, targetY, pulseRadius, 0, 2 * Math.PI);
+                
+                if (isClose) {
+                    ctx.fillStyle = 'rgba(16, 185, 129, 0.25)'; // Emerald glow
+                    ctx.fill();
+                    ctx.strokeStyle = 'rgba(16, 185, 129, 0.5)';
+                    ctx.lineWidth = 1;
+                    ctx.stroke();
+                } else {
+                    ctx.fillStyle = 'rgba(245, 158, 11, 0.15)'; // Amber glow
+                    ctx.fill();
+                }
+                
+                // Center dot
+                ctx.beginPath();
+                ctx.arc(targetX, targetY, 3, 0, 2 * Math.PI);
+                ctx.fillStyle = isClose ? '#10b981' : '#f59e0b';
+                ctx.fill();
+
+                // Label target zone
+                ctx.font = "bold 8px Inter, sans-serif";
+                ctx.fillStyle = isClose ? '#34d399' : '#f59e0b';
+                ctx.fillText(targetLabel.toUpperCase(), targetX + 8, targetY + 3);
+            }
+
             // Lips (Animated Red)
             ctx.strokeStyle = '#f43f5e';
             ctx.lineWidth = 4;
@@ -700,12 +767,12 @@
             ctx.lineWidth = 4;
             ctx.beginPath();
             ctx.moveTo(160, 160); 
-            let animOffset = Math.sin(phase) * 8;
 
             if (type === 'tongue-tip') {
-                ctx.bezierCurveTo(150, 120, 120, 85 + animOffset, 95 + animOffset/2, 75 + animOffset/4);
+                // Improved coordinates to reach closer to the Alveolar Ridge
+                ctx.bezierCurveTo(150, 120, 120, 75 + animOffset, 105 + animOffset/2, 65 + animOffset/2);
                 ctx.quadraticCurveTo(84, 98, 110, 145);
-                ctx.fillText("TIP", 100, 100);
+                ctx.fillText("TIP", 115, 95);
             } else if (type === 'tongue-back') {
                 ctx.bezierCurveTo(180, 85 + animOffset, 120, 120, 90, 120);
                 ctx.quadraticCurveTo(92, 130, 120, 145);
@@ -723,10 +790,11 @@
             ctx.fill();
             ctx.stroke();
 
-            // Airflow Indicators
-            ctx.strokeStyle = 'rgba(99, 102, 241, 0.5)';
-            ctx.lineWidth = 2;
-            ctx.setLineDash([4, 4]);
+            // Airflow Indicators (Animated flowing dashed line)
+            ctx.strokeStyle = 'rgba(99, 102, 241, 0.6)';
+            ctx.lineWidth = 2.5;
+            ctx.setLineDash([6, 6]);
+            ctx.lineDashOffset = -phase * 15;
             ctx.beginPath();
             ctx.moveTo(180, 120);
             if (type === 'tongue-tip') ctx.quadraticCurveTo(120, 100, 75, 95); 
