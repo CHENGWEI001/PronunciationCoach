@@ -8,7 +8,7 @@ Aligned with the **SpeechSTAR** clinical therapy framework, the application util
 
 ## 🏗️ Design & Architecture
 
-Articulation AI is designed as a **serverless, single-file application (`ai_pronunciation_coach.html`)**. It requires no backend server, database, or complex build pipelines—it runs entirely in the user's browser, communicating directly with the Gemini API.
+Articulation AI is designed as a **serverless, single-file application (`index.html`)**. It requires no backend server, database, or complex build pipelines—it runs entirely in the user's browser, communicating directly with the Gemini API.
 
 ### System Architecture Flow
 
@@ -65,7 +65,7 @@ graph TD
 
 ### Quick Start: Running the Demo (No API Key Required)
 
-1.  Open [ai_pronunciation_coach.html](file:///usr/local/google/home/chengweih/wrk/repo/pronunciation_coach/ai_pronunciation_coach.html) in your web browser.
+1.  Open [index.html](file:///usr/local/google/home/chengweih/wrk/repo/pronunciation_coach/index.html) in your web browser.
 2.  You will land on the **Interactive Speech Clinic** dashboard (blank state).
 3.  Click the blue **"Run Demo Diagnostic"** button on the left panel.
 4.  This instantly loads a mock clinical run representing a common error: saying **"shells"** instead of **"sells"** (an Alveolar-to-Palatal shift).
