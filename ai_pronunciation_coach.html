@@ -631,190 +631,312 @@
         }
 
         // --- Improved Articulatory Map Drawing ---
+        // --- Articulatory Map Constants & Helpers ---
+        const TONGUE_SHAPES = {
+            'neutral': {
+                cp1: {x: 145, y: 110}, cp2: {x: 120, y: 100}, tip: {x: 90, y: 105},
+                cp3: {x: 95, y: 120}, bottom: {x: 120, y: 130}
+            },
+            'tongue-tip': { // Alveolar
+                cp1: {x: 140, y: 100}, cp2: {x: 115, y: 80}, tip: {x: 85, y: 74},
+                cp3: {x: 85, y: 95}, bottom: {x: 115, y: 130}
+            },
+            'tongue-back': { // Velar
+                cp1: {x: 160, y: 100}, cp2: {x: 145, y: 75}, tip: {x: 105, y: 110},
+                cp3: {x: 105, y: 125}, bottom: {x: 120, y: 130}
+            },
+            'dental': { // Interdental
+                cp1: {x: 140, y: 110}, cp2: {x: 110, y: 100}, tip: {x: 72, y: 90},
+                cp3: {x: 75, y: 115}, bottom: {x: 115, y: 130}
+            },
+            'palatal': { // Palatal (e.g. "sh")
+                cp1: {x: 140, y: 100}, cp2: {x: 115, y: 80}, tip: {x: 92, y: 90},
+                cp3: {x: 92, y: 110}, bottom: {x: 115, y: 130}
+            },
+            'lips': { // Bilabial
+                cp1: {x: 145, y: 110}, cp2: {x: 120, y: 100}, tip: {x: 90, y: 105},
+                cp3: {x: 95, y: 120}, bottom: {x: 120, y: 130}
+            }
+        };
+
+        const LIP_GAPS = {
+            'neutral': 8,
+            'tongue-tip': 6,
+            'tongue-back': 8,
+            'dental': 6,
+            'palatal': 6,
+            'lips': 0
+        };
+
+        function interpolate(start, end, t) {
+            return start + (end - start) * t;
+        }
+
+        function interpolatePoints(p1, p2, t) {
+            return {
+                x: interpolate(p1.x, p2.x, t),
+                y: interpolate(p1.y, p2.y, t)
+            };
+        }
+
+        function interpolateShape(shape1, shape2, t) {
+            return {
+                cp1: interpolatePoints(shape1.cp1, shape2.cp1, t),
+                cp2: interpolatePoints(shape1.cp2, shape2.cp2, t),
+                tip: interpolatePoints(shape1.tip, shape2.tip, t),
+                cp3: interpolatePoints(shape1.cp3, shape2.cp3, t),
+                bottom: interpolatePoints(shape1.bottom, shape2.bottom, t)
+            };
+        }
+
         function initArticulatorCanvas() {
             articulatorCanvas = document.getElementById('articulator-canvas');
             articulatorCtx = articulatorCanvas.getContext('2d');
             articulatorCanvas.width = 224;
             articulatorCanvas.height = 224;
-            drawMouthCrossSection('tongue-tip', 0);
+            // Draw initial neutral state
+            drawMouthCrossSectionDynamic(TONGUE_SHAPES['neutral'], LIP_GAPS['neutral'], 'neutral', 0, true);
         }
 
-        function drawMouthCrossSection(type, phase) {
+        function drawMouthCrossSectionDynamic(tongueShape, lipGap, targetType, targetPhase, isCorrectState) {
             const ctx = articulatorCtx;
             const w = articulatorCanvas.width;
             const h = articulatorCanvas.height;
             ctx.clearRect(0, 0, w, h);
 
-            // 1. Faint background facial silhouette for anatomical context (facing left)
-            ctx.strokeStyle = 'rgba(255, 255, 255, 0.03)';
-            ctx.lineWidth = 2;
-            ctx.beginPath();
-            ctx.moveTo(40, 10); // Forehead
-            ctx.quadraticCurveTo(45, 25, 45, 35); // Nose bridge
-            ctx.quadraticCurveTo(25, 45, 48, 55); // Nose tip & under-nose
-            ctx.moveTo(48, 125); // Under lower lip
-            ctx.quadraticCurveTo(35, 140, 70, 175); // Chin & Jaw
-            ctx.lineTo(110, 185); // Neck
-            ctx.stroke();
-
-            // Persistent Context Labels for Clarity
-            ctx.font = "bold 9px Inter, sans-serif";
-            ctx.fillStyle = "#64748b";
-            ctx.fillText("HARD PALATE", 85, 40);
-            ctx.fillText("VELUM", 155, 60);
-            ctx.fillText("JAW", 50, 180);
-
-            // Roof of mouth
-            ctx.strokeStyle = '#334155';
-            ctx.lineWidth = 3;
+            // Enable anti-aliasing and clean line joins
             ctx.lineCap = 'round';
+            ctx.lineJoin = 'round';
+
+            // --- 1. Static Upper Face Silhouette ---
+            ctx.strokeStyle = '#475569'; // Dark slate for face profile
+            ctx.lineWidth = 3;
             ctx.beginPath();
-            ctx.moveTo(10, 50); 
-            ctx.quadraticCurveTo(50, 30, 90, 60); 
-            ctx.lineTo(130, 60); 
-            ctx.quadraticCurveTo(170, 60, 200, 100); // Velum
+            ctx.moveTo(60, 10); // Forehead
+            ctx.quadraticCurveTo(65, 25, 60, 35); // Nose bridge
+            ctx.lineTo(40, 50); // Nose tip
+            ctx.lineTo(55, 62); // Philtrum
+            ctx.quadraticCurveTo(48, 68, 50, 72); // Upper lip outer
+            ctx.quadraticCurveTo(56, 75, 58, 78); // Upper lip inner (mouth corner)
             ctx.stroke();
 
-            // Teeth (Static Reference)
-            ctx.fillStyle = '#f8fafc';
-            ctx.fillRect(88, 60, 5, 15); // Upper
-            ctx.fillRect(86, 125, 5, -15); // Lower
-
-            // Jaw Line
-            ctx.strokeStyle = '#1e293b';
+            // --- 2. Static Roof of Mouth & Throat Back ---
+            ctx.strokeStyle = '#64748b'; // Medium slate for internal tract
+            ctx.lineWidth = 2.5;
             ctx.beginPath();
-            ctx.moveTo(10, 160);
-            ctx.quadraticCurveTo(60, 190, 140, 160); 
+            ctx.moveTo(58, 78); // Starts at Upper Lip Inner
+            ctx.quadraticCurveTo(75, 76, 88, 72); // Alveolar Ridge
+            ctx.quadraticCurveTo(120, 60, 150, 65); // Hard/Soft Palate (Velum)
+            ctx.quadraticCurveTo(165, 68, 170, 80); // Uvula
+            ctx.quadraticCurveTo(180, 95, 180, 120); // Pharynx Back Wall
+            ctx.lineTo(180, 200); // Down to esophagus
             ctx.stroke();
 
-            // Set up target zone parameters for visual guidance
-            let targetX = 0, targetY = 0, targetLabel = "", isClose = false;
-            let animOffset = Math.sin(phase) * 8;
+            // --- 3. Dynamic Lower Face & Floor of Mouth (Moves with jaw/lipGap) ---
+            let lowerLipInnerY = 78 + lipGap;
+            let chinY = 150 + lipGap * 1.2;
+            let chinX = 70 - lipGap * 0.3; // Shifts back slightly as jaw drops
+            let neckX = 110;
+            let neckY = 200;
 
-            if (type === 'tongue-tip') {
-                targetX = 105;
-                targetY = 60;
-                targetLabel = "Alveolar Ridge";
-                isClose = (animOffset < -4);
-            } else if (type === 'lips') {
-                targetX = 62;
-                targetY = 90;
-                targetLabel = "Lips";
-                isClose = (Math.sin(phase) > 0.5);
-            } else if (type === 'tongue-back') {
-                targetX = 165;
-                targetY = 65;
-                targetLabel = "Velum";
-                isClose = (animOffset < -4);
-            } else if (type === 'dental') {
-                targetX = 88;
-                targetY = 95;
-                targetLabel = "Teeth Gap";
-                isClose = (animOffset > 4);
-            }
-
-            // Draw Target Zone Pulse & Indicator
-            if (targetX > 0) {
-                let pulseRadius = 6 + Math.sin(phase * 2) * 2;
-                ctx.beginPath();
-                ctx.arc(targetX, targetY, pulseRadius, 0, 2 * Math.PI);
-                
-                if (isClose) {
-                    ctx.fillStyle = 'rgba(16, 185, 129, 0.25)'; // Emerald glow
-                    ctx.fill();
-                    ctx.strokeStyle = 'rgba(16, 185, 129, 0.5)';
-                    ctx.lineWidth = 1;
-                    ctx.stroke();
-                } else {
-                    ctx.fillStyle = 'rgba(245, 158, 11, 0.15)'; // Amber glow
-                    ctx.fill();
-                }
-                
-                // Center dot
-                ctx.beginPath();
-                ctx.arc(targetX, targetY, 3, 0, 2 * Math.PI);
-                ctx.fillStyle = isClose ? '#10b981' : '#f59e0b';
-                ctx.fill();
-
-                // Label target zone
-                ctx.font = "bold 8px Inter, sans-serif";
-                ctx.fillStyle = isClose ? '#34d399' : '#f59e0b';
-                ctx.fillText(targetLabel.toUpperCase(), targetX + 8, targetY + 3);
-            }
-
-            // Lips (Animated Red)
-            ctx.strokeStyle = '#f43f5e';
-            ctx.lineWidth = 4;
+            // Lower Face Silhouette (Lower Lip to Chin to Neck)
+            ctx.strokeStyle = '#475569';
+            ctx.lineWidth = 3;
             ctx.beginPath();
-            if (type === 'lips') {
-                let lipGap = Math.sin(phase) * 6;
-                ctx.moveTo(65, 55);
-                ctx.quadraticCurveTo(75, 85 + lipGap, 65, 85); 
-                ctx.moveTo(65, 125);
-                ctx.quadraticCurveTo(75, 95 - lipGap, 65, 95); 
-                ctx.fillText("LIPS", 30, 90);
-            } else {
-                ctx.moveTo(60, 50);
-                ctx.quadraticCurveTo(70, 65, 60, 75);
-                ctx.moveTo(60, 130);
-                ctx.quadraticCurveTo(70, 115, 60, 105);
-            }
+            ctx.moveTo(58, lowerLipInnerY); // Lower lip inner
+            ctx.quadraticCurveTo(46, lowerLipInnerY + 4, 48, lowerLipInnerY + 12); // Lower lip outer
+            ctx.quadraticCurveTo(chinX - 12, chinY - 15, chinX, chinY); // Chin
+            ctx.lineTo(neckX, neckY); // Neck
             ctx.stroke();
 
-            // Tongue (Animated Purple)
-            ctx.strokeStyle = '#a855f7';
-            ctx.fillStyle = 'rgba(168, 85, 247, 0.25)';
-            ctx.lineWidth = 4;
+            // Floor of Mouth (starts from Lower Lip Inner, moves with jaw)
+            ctx.strokeStyle = '#64748b';
+            ctx.lineWidth = 2.5;
             ctx.beginPath();
-            ctx.moveTo(160, 160); 
+            ctx.moveTo(58, lowerLipInnerY);
+            ctx.quadraticCurveTo(75, lowerLipInnerY + 6, 88, lowerLipInnerY + 10); // Behind lower lip
+            ctx.quadraticCurveTo(110, 145 + lipGap * 0.5, 140, 200); // Floor/Front of throat
+            ctx.stroke();
 
-            if (type === 'tongue-tip') {
-                // Improved coordinates to reach closer to the Alveolar Ridge
-                ctx.bezierCurveTo(150, 120, 120, 75 + animOffset, 105 + animOffset/2, 65 + animOffset/2);
-                ctx.quadraticCurveTo(84, 98, 110, 145);
-                ctx.fillText("TIP", 115, 95);
-            } else if (type === 'tongue-back') {
-                ctx.bezierCurveTo(180, 85 + animOffset, 120, 120, 90, 120);
-                ctx.quadraticCurveTo(92, 130, 120, 145);
-                ctx.fillText("BACK", 145, 110);
-            } else if (type === 'dental') {
-                ctx.bezierCurveTo(150, 130, 120, 115, 80 + animOffset, 110);
-                ctx.quadraticCurveTo(90, 135, 120, 145);
-                ctx.fillText("TIP (DENTAL)", 70, 145);
-            } else {
-                ctx.bezierCurveTo(150, 130, 120, 120, 100, 115);
-                ctx.quadraticCurveTo(105, 130, 120, 145);
+            // --- 4. Draw Teeth (Rounded shapes, lower moves with jaw) ---
+            ctx.fillStyle = '#f1f5f9'; // Clean white
+            // Upper Tooth (fixed at Alveolar Ridge)
+            ctx.beginPath();
+            ctx.roundRect(84, 72, 4, 8, [0, 0, 1, 1]); // Rounded bottom
+            ctx.fill();
+            
+            // Lower Tooth (moves with lower jaw)
+            ctx.beginPath();
+            ctx.roundRect(80, lowerLipInnerY + 2, 4, 8, [1, 1, 0, 0]); // Rounded top
+            ctx.fill();
+
+            // --- 5. Draw Tongue (Fleshy organic shape & color) ---
+            ctx.strokeStyle = '#e11d48'; // Rose-600 border
+            ctx.fillStyle = 'rgba(244, 63, 94, 0.25)'; // Rose-500 fill with opacity
+            ctx.lineWidth = 3.5;
+            
+            if (isCorrectState) {
+                ctx.shadowBlur = 8;
+                ctx.shadowColor = 'rgba(244, 63, 94, 0.5)';
             }
-            ctx.lineTo(160, 160);
+
+            ctx.beginPath();
+            ctx.moveTo(150, 150); // Tongue root (fixed)
+            ctx.bezierCurveTo(
+                tongueShape.cp1.x, tongueShape.cp1.y,
+                tongueShape.cp2.x, tongueShape.cp2.y,
+                tongueShape.tip.x, tongueShape.tip.y
+            );
+            ctx.quadraticCurveTo(
+                tongueShape.cp3.x, tongueShape.cp3.y,
+                tongueShape.bottom.x, tongueShape.bottom.y
+            );
+            ctx.lineTo(150, 150);
             ctx.closePath();
             ctx.fill();
             ctx.stroke();
+            ctx.shadowBlur = 0; // Reset shadow
 
-            // Airflow Indicators (Animated flowing dashed line)
-            ctx.strokeStyle = 'rgba(99, 102, 241, 0.6)';
-            ctx.lineWidth = 2.5;
+            // --- 6. Draw Target Zone (Pulsing feedback) ---
+            let targetX = 0, targetY = 0, targetLabel = "";
+            if (targetType === 'tongue-tip') { targetX = 88; targetY = 72; targetLabel = "Alveolar Ridge"; }
+            else if (targetType === 'lips') { targetX = 52; targetY = 78 + lipGap/2; targetLabel = "Lips"; }
+            else if (targetType === 'tongue-back') { targetX = 150; targetY = 65; targetLabel = "Velum"; }
+            else if (targetType === 'dental') { targetX = 82; targetY = 82; targetLabel = "Teeth Gap"; }
+            else if (targetType === 'palatal') { targetX = 120; targetY = 60; targetLabel = "Hard Palate"; }
+
+            if (targetX > 0) {
+                let pulseRadius = 5 + Math.sin(targetPhase * 2.5) * 2.5;
+                ctx.beginPath();
+                ctx.arc(targetX, targetY, pulseRadius, 0, 2 * Math.PI);
+                if (isCorrectState) {
+                    ctx.fillStyle = 'rgba(16, 185, 129, 0.2)';
+                    ctx.strokeStyle = 'rgba(16, 185, 129, 0.6)';
+                    ctx.lineWidth = 1.5;
+                    ctx.stroke();
+                } else {
+                    ctx.fillStyle = 'rgba(239, 68, 68, 0.15)';
+                    ctx.strokeStyle = 'rgba(239, 68, 68, 0.5)';
+                    ctx.lineWidth = 1.5;
+                    ctx.stroke();
+                }
+                ctx.fill();
+
+                ctx.beginPath();
+                ctx.arc(targetX, targetY, 3.5, 0, 2 * Math.PI);
+                ctx.fillStyle = isCorrectState ? '#10b981' : '#ef4444';
+                ctx.fill();
+
+                ctx.font = "bold 8px Inter, sans-serif";
+                ctx.fillStyle = isCorrectState ? '#34d399' : '#f87171';
+                ctx.fillText(targetLabel.toUpperCase(), targetX + 8, targetY + 3);
+            }
+
+            // --- 7. Draw Airflow (Sky blue breath stream) ---
+            ctx.strokeStyle = 'rgba(56, 189, 248, 0.5)'; // Sky-400
+            ctx.lineWidth = 3;
             ctx.setLineDash([6, 6]);
-            ctx.lineDashOffset = -phase * 15;
+            ctx.lineDashOffset = -targetPhase * 12;
             ctx.beginPath();
-            ctx.moveTo(180, 120);
-            if (type === 'tongue-tip') ctx.quadraticCurveTo(120, 100, 75, 95); 
-            else if (type === 'lips') ctx.quadraticCurveTo(120, 110, 68, 90); 
-            else ctx.quadraticCurveTo(120, 110, 80, 110);
+            ctx.moveTo(170, 110); // Throat
+            ctx.quadraticCurveTo(120, 95, tongueShape.tip.x - 8, tongueShape.tip.y - 5); // Over tongue
+            ctx.lineTo(45, 78 + lipGap/2); // Out of lips
             ctx.stroke();
             ctx.setLineDash([]);
+
+            // --- 8. Anatomical Labels ---
+            ctx.font = "bold 8px Inter, sans-serif";
+            ctx.fillStyle = "#64748b";
+            ctx.fillText("PALATE", 115, 50);
+            ctx.fillText("VELUM", 155, 55);
+            ctx.fillText("PHARYNX", 145, 180);
+            ctx.fillText("JAW", 80, 185);
         }
 
-        function animateArticulators(focusArea) {
-            clearInterval(mouthAnimationTimer);
-            document.getElementById('current-articulator-badge').textContent = focusArea.toUpperCase().replace('-', ' ');
-            let frame = 0;
-            mouthAnimationTimer = setInterval(() => { frame += 0.15; drawMouthCrossSection(focusArea, frame); }, 50);
+        let animationId;
+        let animationStartTime;
+        const ANIMATION_DURATION = 1800; // 1.8 seconds transition
+        const HOLD_DURATION = 1200;      // 1.2 seconds hold
+        const TOTAL_CYCLE = ANIMATION_DURATION + HOLD_DURATION;
 
-            const desc = document.getElementById('interactive-mechanics-desc');
-            if (focusArea === 'tongue-tip') desc.textContent = "Tongue tip should approximate or touch the Alveolar Ridge behind the upper teeth. Used for T, D, S, Z.";
-            else if (focusArea === 'lips') desc.textContent = "Lips compress fully for P, B, M, or round for vowels. Release with a burst or maintain closure for nasals.";
-            else if (focusArea === 'tongue-back') desc.textContent = "The back of the tongue raises toward the Velum (soft palate). Essential for K, G, and 'ng' sounds.";
-            else if (focusArea === 'dental') desc.textContent = "Tongue tip protrudes slightly between teeth (interdental) or rests against the back of upper teeth for the 'th' sound.";
+        function startCorrectionAnimation(incorrectType, correctType) {
+            if (animationId) {
+                cancelAnimationFrame(animationId);
+            }
+
+            const badge = document.getElementById('current-articulator-badge');
+            if (incorrectType === 'neutral') {
+                badge.textContent = correctType.toUpperCase().replace('-', ' ');
+            } else {
+                badge.textContent = `${incorrectType.toUpperCase().replace('-', ' ')} ➔ ${correctType.toUpperCase().replace('-', ' ')}`;
+            }
+
+            const startShape = TONGUE_SHAPES[incorrectType] || TONGUE_SHAPES['neutral'];
+            const endShape = TONGUE_SHAPES[correctType] || TONGUE_SHAPES['neutral'];
+
+            const startGap = LIP_GAPS[incorrectType] !== undefined ? LIP_GAPS[incorrectType] : 8;
+            const endGap = LIP_GAPS[correctType] !== undefined ? LIP_GAPS[correctType] : 8;
+
+            animationStartTime = performance.now();
+
+            function update(now) {
+                const elapsed = (now - animationStartTime) % TOTAL_CYCLE;
+                let t = 0;
+                let isCorrect = false;
+
+                if (elapsed < ANIMATION_DURATION) {
+                    t = elapsed / ANIMATION_DURATION;
+                    // Ease in out quad
+                    t = t < 0.5 ? 2 * t * t : 1 - Math.pow(-2 * t + 2, 2) / 2;
+                } else {
+                    t = 1;
+                    isCorrect = true;
+                }
+
+                const currentShape = interpolateShape(startShape, endShape, t);
+                const currentGap = interpolate(startGap, endGap, t);
+                const phase = now / 200;
+
+                drawMouthCrossSectionDynamic(currentShape, currentGap, correctType, phase, isCorrect);
+
+                const desc = document.getElementById('interactive-mechanics-desc');
+                if (incorrectType === 'neutral') {
+                    desc.innerHTML = `<span class="text-indigo-400 font-bold">Target Position:</span> ${getArticulatorDescription(correctType)}`;
+                } else {
+                    if (isCorrect) {
+                        desc.innerHTML = `<span class="text-emerald-400 font-bold">Correct Position:</span> Move to ${getArticulatorDescription(correctType)}`;
+                    } else {
+                        desc.innerHTML = `<span class="text-red-400 font-bold">Incorrect Position:</span> Avoid ${getArticulatorDescription(incorrectType)}`;
+                    }
+                }
+
+                animationId = requestAnimationFrame(update);
+            }
+
+            animationId = requestAnimationFrame(update);
+        }
+
+        function getArticulatorDescription(type) {
+            if (type === 'tongue-tip') return "Tongue tip at the Alveolar Ridge behind the upper teeth (for T, D, S, Z).";
+            if (type === 'lips') return "Lips compressed fully (for P, B, M) or rounded.";
+            if (type === 'tongue-back') return "Back of the tongue raised toward the Velum (for K, G, NG).";
+            if (type === 'dental') return "Tongue tip slightly between teeth (for TH).";
+            if (type === 'palatal') return "Tongue body raised towards the hard palate (for SH, CH).";
+            return "Neutral position.";
+        }
+
+        function animateArticulators(incorrectOrCorrect, maybeCorrect) {
+            let incorrect = 'neutral';
+            let correct = 'neutral';
+
+            if (maybeCorrect === undefined) {
+                correct = incorrectOrCorrect;
+            } else {
+                incorrect = incorrectOrCorrect;
+                correct = maybeCorrect;
+            }
+
+            startCorrectionAnimation(incorrect, correct);
         }
 
         // --- API and JSON processing ---
@@ -828,12 +950,21 @@
 
             const systemInstructions = `
                 Analyze pronunciation using SpeechSTAR framework. Identify place (Lips, Tongue Tip, Front, Back) and manner.
+                Provide the exact SpeechSTAR deep-link URL if you can identify the target sound. The URL format is:
+                https://speechstar.ac.uk/speech-sound-animations/#location=ID
+                where ID is the database ID. Reference IDs:
+                - Consonants: /r/(rap)=1, /z/(zip)=2, /l/(lip)=3, /n/(nap)=4, /d/(dot)=5, /m/(mop)=6, /b/(bat)=7, /ð/(though)=8, /v/(vat)=9, /j/(yes)=10, /ʒ/(vision)=11, /ŋ/(sing)=12, /g/(got)=13, /s/(sip)=14, /t/(tot)=15, /p/(pat)=16, /θ/(think)=17, /h/(hen)=18, /f/(fit)=19, /ʃ/(ship)=20, /x/(loch)=21, /k/(cot)=22, /w/(was)=23, /ʍ/(whale)=24, /tʃ/(cheap)=25, /dʒ/(jeep)=26
+                - Comparisons (Syllable Onset / Between Vowels):
+                  s vs sh (sells/shells)=34, s vs th (think/sink)=36 (onset)/35 (vowels), z vs th=38/37, r vs w=67/68, l vs y=49, r vs y=50, th vs f=79/80, th vs v=81/82, k vs t=106/105, d vs g=41/40, s vs t=100/99, sh vs t=102/101, ch vs t=104/103, j vs d=87/88, f vs b=55/54, v vs b=83/84, f vs p=85/86
+                If the error matches one of these comparisons, use the comparison URL (e.g., .../#location=34). If it is a single sound correction, use the single consonant URL (e.g., .../#location=14 for /s/). Otherwise, default to https://speechstar.ac.uk/speech-sound-animations/
+                
                 Return JSON only: {
                   "transcription": "...", "intended_sentence": "...", "score": 85,
                   "mispronounced_words": [{
                     "word": "word", "how_heard": "...", "problem": "...", "placement_guide": "...", 
-                    "articulator": "tongue-tip|lips|tongue-back|dental",
-                    "speechstar_url": "https://speechstar.ac.uk/speech-sound-animations/"
+                    "incorrect_articulator": "tongue-tip|lips|tongue-back|dental|palatal|neutral",
+                    "correct_articulator": "tongue-tip|lips|tongue-back|dental|palatal|neutral",
+                    "speechstar_url": "URL"
                   }],
                   "tongue_guide": "...", "jaw_guide": "...", "global_muscle_guide": "..."
                 }
@@ -873,7 +1004,7 @@
             (data.mispronounced_words || []).forEach((item, index) => {
                 const div = document.createElement('div');
                 div.className = "pt-4 flex flex-col space-y-3 cursor-pointer hover:bg-slate-900/30 p-2 rounded-lg transition";
-                div.onclick = () => animateArticulators(item.articulator || 'tongue-tip');
+                div.onclick = () => animateArticulators(item.incorrect_articulator || 'neutral', item.correct_articulator || 'tongue-tip');
                 div.innerHTML = `
                     <div class="flex items-center justify-between gap-2">
                         <div class="flex items-center gap-2">
@@ -891,7 +1022,7 @@
                     </div>
                 `;
                 container.appendChild(div);
-                if (index === 0) animateArticulators(item.articulator || 'tongue-tip');
+                if (index === 0) animateArticulators(item.incorrect_articulator || 'neutral', item.correct_articulator || 'tongue-tip');
             });
             lucide.createIcons();
             document.getElementById('results-dashboard').scrollIntoView({ behavior: 'smooth' });
@@ -901,11 +1032,13 @@
             renderDiagnostics({
                 "transcription": "She [shells] seashells.", "intended_sentence": "She sells seashells.", "score": 72,
                 "mispronounced_words": [{
-                    "word": "sells", "how_heard": "shells", "problem": "Palatal-to-Dental shift.",
-                    "articulator": "tongue-tip", "placement_guide": "Keep the tongue tip at the alveolar ridge (just behind teeth).",
-                    "speechstar_url": "https://speechstar.ac.uk/speech-sound-animations/"
+                    "word": "sells", "how_heard": "shells", "problem": "Alveolar-to-Palatal shift (saying 'sh' instead of 's').",
+                    "incorrect_articulator": "palatal",
+                    "correct_articulator": "tongue-tip",
+                    "placement_guide": "Start with the tongue body raised (as if saying 'sh'), then consciously lower it and move the tongue tip forward to almost touch the alveolar ridge behind your upper teeth to produce a sharp 's' sound.",
+                    "speechstar_url": "https://speechstar.ac.uk/speech-sound-animations/#location=34"
                 }],
-                "tongue_guide": "Maintain front position.", "jaw_guide": "Medium gap.", "global_muscle_guide": "Continuous friction."
+                "tongue_guide": "Move tongue tip forward and down from the palate to the alveolar ridge.", "jaw_guide": "Keep jaw relatively closed, teeth close but not touching.", "global_muscle_guide": "Release air continuously through a narrow channel at the front of the mouth."
             });
         }
 
