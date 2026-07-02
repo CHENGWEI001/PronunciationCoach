@@ -537,6 +537,26 @@
         </div>
     </div>
 
+    <!-- Video Player Modal -->
+    <div id="video-modal" class="fixed inset-0 z-50 hidden flex items-center justify-center bg-black/80 backdrop-blur-sm p-4">
+        <div class="bg-surface-container rounded-2xl border border-outline-variant max-w-2xl w-full overflow-hidden shadow-2xl relative">
+            <div class="flex items-center justify-between p-4 border-b border-outline-variant">
+                <h3 class="font-title-md text-on-surface text-sm font-bold" id="video-modal-title">Reference Pronunciation Video</h3>
+                <button onclick="closeVideoModal()" class="text-on-surface-variant hover:text-on-surface flex items-center">
+                    <span class="material-symbols-outlined">close</span>
+                </button>
+            </div>
+            <div class="aspect-video w-full bg-black flex items-center justify-center">
+                <video id="modal-video-player" controls class="w-full max-h-[400px]" preload="none"></video>
+            </div>
+            <div class="p-4 bg-surface-container-low flex justify-end gap-2">
+                <button onclick="closeVideoModal()" class="px-6 py-1.5 rounded-full border border-outline text-primary font-bold hover:bg-primary/5 transition text-xs">
+                    Close
+                </button>
+            </div>
+        </div>
+    </div>
+
     <!-- JavaScript Logic -->
     <script>
         const SPEECHSTAR_MAP = {
@@ -1198,11 +1218,10 @@
             } else {
                 data.mispronounced_words.forEach((item, index) => {
                     const div = document.createElement('div');
-                    div.className = "flex flex-col bg-error/10 p-3 rounded-xl border border-error/20 cursor-pointer hover:bg-error/20 transition-all";
+                    div.className = "flex items-center gap-4 bg-error/10 p-3 rounded-xl border border-error/20 cursor-pointer hover:bg-error/20 transition-all";
                     div.onclick = () => animateArticulators(item.incorrect_articulator || 'neutral', item.correct_articulator || 'tongue-tip');
                     
                     let locId = "";
-                    let videoHtml = "";
                     let playButtonHtml = "";
                     
                     if (item.speechstar_url) {
@@ -1212,39 +1231,31 @@
                             const mapEntry = SPEECHSTAR_MAP[locId];
                             if (mapEntry && mapEntry.video) {
                                 playButtonHtml = `
-                                    <button class="text-primary text-[10px] font-bold hover:underline flex items-center gap-0.5" onclick="toggleVideoPlayer(event, ${index})">
-                                        <span class="material-symbols-outlined text-[12px]" id="play-icon-${index}">play_circle</span> <span id="play-text-${index}">Play Video</span>
+                                    <button class="text-primary text-[10px] font-bold hover:underline flex items-center gap-0.5" onclick="playVideoInModal(event, '${locId}')">
+                                        <span class="material-symbols-outlined text-[12px]">play_circle</span> Play Video
                                     </button>
-                                `;
-                                videoHtml = `
-                                    <div id="video-container-${index}" class="hidden w-full mt-3 rounded-lg overflow-hidden border border-outline-variant bg-black">
-                                        <video src="https://speechstar.ac.uk/video/${mapEntry.video}" controls class="w-full max-h-[200px]" preload="none"></video>
-                                    </div>
                                 `;
                             }
                         }
                     }
 
                     div.innerHTML = `
-                        <div class="flex items-center gap-4 w-full">
-                            <div class="text-center px-3 py-1 bg-surface-container-low rounded-lg shrink-0 border border-outline-variant min-w-[70px]">
-                                <p class="text-[9px] text-on-surface-variant/60 uppercase font-bold">Expected</p>
-                                <p class="font-body-md font-bold text-secondary text-xs">${item.word}</p>
-                                <p class="text-[9px] text-on-surface-variant/60 uppercase font-bold mt-1">Heard</p>
-                                <p class="font-body-md font-bold text-error text-xs">${item.how_heard}</p>
-                            </div>
-                            <div class="flex-1 min-w-0">
-                                <p class="font-label-md text-sm text-on-surface font-bold truncate">${item.word}</p>
-                                <p class="text-xs text-on-surface-variant mt-1 line-clamp-2">${item.placement_guide}</p>
-                                <div class="flex gap-3 mt-2">
-                                    <a class="text-primary text-[10px] font-bold hover:underline flex items-center gap-0.5" href="${item.speechstar_url || 'https://speechstar.ac.uk/'}" target="_blank" onclick="event.stopPropagation();">
-                                        <span class="material-symbols-outlined text-xs">open_in_new</span> View STAR
-                                    </a>
-                                    ${playButtonHtml}
-                                </div>
+                        <div class="text-center px-3 py-1 bg-surface-container-low rounded-lg shrink-0 border border-outline-variant min-w-[70px]">
+                            <p class="text-[9px] text-on-surface-variant/60 uppercase font-bold">Expected</p>
+                            <p class="font-body-md font-bold text-secondary text-xs">${item.word}</p>
+                            <p class="text-[9px] text-on-surface-variant/60 uppercase font-bold mt-1">Heard</p>
+                            <p class="font-body-md font-bold text-error text-xs">${item.how_heard}</p>
+                        </div>
+                        <div class="flex-1 min-w-0">
+                            <p class="font-label-md text-sm text-on-surface font-bold truncate">${item.word}</p>
+                            <p class="text-xs text-on-surface-variant mt-1 line-clamp-2">${item.placement_guide}</p>
+                            <div class="flex gap-3 mt-2">
+                                <a class="text-primary text-[10px] font-bold hover:underline flex items-center gap-0.5" href="${item.speechstar_url || 'https://speechstar.ac.uk/'}" target="_blank" onclick="event.stopPropagation();">
+                                    <span class="material-symbols-outlined text-xs">open_in_new</span> View STAR
+                                </a>
+                                ${playButtonHtml}
                             </div>
                         </div>
-                        ${videoHtml}
                     `;
                     container.appendChild(div);
                     if (index === 0) animateArticulators(item.incorrect_articulator || 'neutral', item.correct_articulator || 'tongue-tip');
@@ -1252,42 +1263,27 @@
             }
         }
 
-        window.toggleVideoPlayer = function(event, index) {
-            event.stopPropagation(); 
-            const container = document.getElementById(`video-container-${index}`);
-            const playIcon = document.getElementById(`play-icon-${index}`);
-            const playText = document.getElementById(`play-text-${index}`);
-            if (container) {
-                const isHidden = container.classList.contains('hidden');
-                
-                document.querySelectorAll('[id^="video-container-"]').forEach(c => {
-                    if (c.id !== `video-container-${index}`) {
-                        c.classList.add('hidden');
-                        const v = c.querySelector('video');
-                        if (v) v.pause();
-                        
-                        const idx = c.id.split('-').pop();
-                        const otherIcon = document.getElementById(`play-icon-${idx}`);
-                        const otherText = document.getElementById(`play-text-${idx}`);
-                        if (otherIcon) otherIcon.textContent = 'play_circle';
-                        if (otherText) otherText.textContent = 'Play Video';
-                    }
-                });
+        window.playVideoInModal = function(event, locId) {
+            event.stopPropagation();
+            const mapEntry = SPEECHSTAR_MAP[locId];
+            if (!mapEntry || !mapEntry.video) return;
 
-                if (isHidden) {
-                    container.classList.remove('hidden');
-                    const video = container.querySelector('video');
-                    if (video) video.play();
-                    if (playIcon) playIcon.textContent = 'pause_circle';
-                    if (playText) playText.textContent = 'Pause';
-                } else {
-                    container.classList.add('hidden');
-                    const video = container.querySelector('video');
-                    if (video) video.pause();
-                    if (playIcon) playIcon.textContent = 'play_circle';
-                    if (playText) playText.textContent = 'Play Video';
-                }
-            }
+            const modal = document.getElementById('video-modal');
+            const player = document.getElementById('modal-video-player');
+            const title = document.getElementById('video-modal-title');
+
+            title.textContent = `SpeechSTAR Reference: "${mapEntry.text}"`;
+            player.src = `https://speechstar.ac.uk/video/${mapEntry.video}`;
+            modal.classList.remove('hidden');
+            player.play();
+        }
+
+        window.closeVideoModal = function() {
+            const modal = document.getElementById('video-modal');
+            const player = document.getElementById('modal-video-player');
+            modal.classList.add('hidden');
+            player.pause();
+            player.src = '';
         }
 
         function loadSampleDiagnostic() {
