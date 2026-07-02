@@ -1,472 +1,543 @@
 <!DOCTYPE html>
-<html lang="en" class="h-full bg-slate-950 text-slate-100">
+<html class="dark" lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AI Pronunciation & Accent Coach</title>
-    <!-- Tailwind CSS -->
-    <script src="https://cdn.tailwindcss.com"></script>
-    <!-- Lucide Icons for premium modern look -->
-    <script src="https://unpkg.com/lucide@latest"></script>
-    <!-- Inter Google Font -->
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <meta charset="utf-8"/>
+    <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+    <title>Articulation AI - Speech Lab</title>
+    <!-- Tailwind CSS with plugins -->
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <!-- Material Symbols Outlined -->
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+    <!-- Geist, Inter, and JetBrains Mono Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700&amp;family=Inter:wght@400;500;600&amp;family=JetBrains+Mono:wght@400;500&amp;display=swap" rel="stylesheet"/>
+    <script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                    "secondary-fixed": "#6ffbbe",
+                    "secondary": "#4edea3",
+                    "surface-variant": "#37333d",
+                    "inverse-surface": "#e7e0ed",
+                    "surface-container-lowest": "#0f0d15",
+                    "surface-bright": "#3b3742",
+                    "surface-container": "#211e27",
+                    "on-tertiary": "#482900",
+                    "on-secondary-fixed-variant": "#005236",
+                    "on-background": "#e7e0ed",
+                    "error": "#ffb4ab",
+                    "surface-container-low": "#1d1a23",
+                    "tertiary-fixed-dim": "#ffb869",
+                    "primary-fixed-dim": "#d0bcff",
+                    "on-surface": "#e7e0ed",
+                    "secondary-container": "#00a572",
+                    "on-primary-fixed-variant": "#5516be",
+                    "on-tertiary-container": "#3f2300",
+                    "outline": "#958ea0",
+                    "surface": "#15121b",
+                    "error-container": "#93000a",
+                    "surface-dim": "#15121b",
+                    "primary": "#d0bcff",
+                    "inverse-on-surface": "#322f39",
+                    "on-secondary-fixed": "#002113",
+                    "inverse-primary": "#6d3bd7",
+                    "primary-container": "#a078ff",
+                    "on-error": "#690005",
+                    "on-secondary": "#003824",
+                    "surface-container-high": "#2c2832",
+                    "outline-variant": "#494454",
+                    "tertiary-container": "#ca801e",
+                    "tertiary-fixed": "#ffdcbb",
+                    "on-surface-variant": "#cbc3d7",
+                    "on-tertiary-fixed-variant": "#673d00",
+                    "on-secondary-container": "#00311f",
+                    "on-primary-container": "#340080",
+                    "secondary-fixed-dim": "#4edea3",
+                    "surface-container-highest": "#37333d",
+                    "on-tertiary-fixed": "#2c1700",
+                    "background": "#15121b",
+                    "on-primary-fixed": "#23005c",
+                    "on-primary": "#3c0091",
+                    "surface-tint": "#d0bcff",
+                    "on-error-container": "#ffdad6",
+                    "tertiary": "#ffb869",
+                    "primary-fixed": "#e9ddff"
+            },
+            "borderRadius": {
+                    "DEFAULT": "0.5rem",
+                    "lg": "0.5rem",
+                    "xl": "0.75rem",
+                    "2xl": "1rem",
+                    "full": "9999px"
+            },
+            "spacing": {
+                    "container-padding-mobile": "20px",
+                    "element-gap": "16px",
+                    "unit": "8px",
+                    "gutter": "24px",
+                    "container-padding-desktop": "40px"
+            },
+            "fontFamily": {
+                    "label-md": ["JetBrains Mono"],
+                    "display": ["Geist"],
+                    "body-lg": ["Inter"],
+                    "headline-lg": ["Geist"],
+                    "headline-md": ["Geist"],
+                    "label-sm": ["JetBrains Mono"],
+                    "headline-lg-mobile": ["Geist"],
+                    "body-md": ["Inter"]
+            },
+            "fontSize": {
+                    "label-md": ["14px", {"lineHeight": "1.4", "letterSpacing": "0.05em", "fontWeight": "500"}],
+                    "display": ["48px", {"lineHeight": "1.1", "letterSpacing": "-0.02em", "fontWeight": "700"}],
+                    "body-lg": ["18px", {"lineHeight": "1.6", "fontWeight": "400"}],
+                    "headline-lg": ["32px", {"lineHeight": "1.2", "fontWeight": "600"}],
+                    "headline-md": ["24px", {"lineHeight": "1.3", "fontWeight": "500"}],
+                    "label-sm": ["12px", {"lineHeight": "1.4", "fontWeight": "400"}],
+                    "headline-lg-mobile": ["24px", {"lineHeight": "1.2", "fontWeight": "600"}],
+                    "body-md": ["16px", {"lineHeight": "1.5", "fontWeight": "400"}]
+            }
+          },
+        },
+      }
+    </script>
     <style>
         body {
+            background-color: #15121b;
+            color: #e7e0ed;
+            overflow-x: hidden;
             font-family: 'Inter', sans-serif;
         }
-        /* Glassmorphism utility classes */
-        .glass {
-            background: rgba(15, 23, 42, 0.6);
+        .glass-panel {
+            background: rgba(255, 255, 255, 0.03);
             backdrop-filter: blur(12px);
             border: 1px solid rgba(255, 255, 255, 0.08);
+            box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
         }
-        .pulse-red {
-            animation: pulse-red-anim 1.5s infinite;
+        .waveform-bar {
+            animation: wave 1.2s ease-in-out infinite alternate;
         }
-        @keyframes pulse-red-anim {
-            0%, 100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.7); }
-            50% { transform: scale(1.05); box-shadow: 0 0 0 10px rgba(239, 68, 68, 0); }
+        @keyframes wave {
+            0% { height: 20%; }
+            100% { height: 80%; }
         }
-        .animate-infinite-loading {
-            animation: loading-bar 2s ease-in-out infinite;
+        @keyframes pulse-soft {
+            0% { box-shadow: 0 0 0 0 rgba(208, 188, 255, 0.4); }
+            70% { box-shadow: 0 0 0 15px rgba(208, 188, 255, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(208, 188, 255, 0); }
         }
-        @keyframes loading-bar {
-            0% { transform: translateX(-100%); }
-            100% { transform: translateX(200%); }
+        .glowing-record:hover {
+            animation: pulse-soft 1.5s infinite;
+            transform: scale(1.05);
+        }
+        .glowing-record {
+            transition: all 0.3s ease;
+        }
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .scroll-hide::-webkit-scrollbar {
+            display: none;
+        }
+        .analyzing-badge {
+            animation: pulse-opacity 2s infinite ease-in-out;
+        }
+        @keyframes pulse-opacity {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.6; }
         }
     </style>
 </head>
-<body class="h-full flex flex-col justify-between overflow-x-hidden selection:bg-indigo-500 selection:text-white">
+<body class="flex min-h-screen">
 
-    <!-- App Header -->
-    <header class="border-b border-slate-800 bg-slate-900/80 sticky top-0 z-50 backdrop-blur-md">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
-            <div class="flex items-center space-x-3">
-                <div class="bg-gradient-to-tr from-indigo-500 to-violet-500 p-2.5 rounded-xl shadow-lg shadow-indigo-500/20">
-                    <i data-lucide="mic" class="w-6 h-6 text-white"></i>
-                </div>
-                <div>
-                    <h1 class="text-lg font-bold bg-gradient-to-r from-white via-slate-200 to-slate-400 bg-clip-text text-transparent">
-                        Articulation AI
-                    </h1>
-                    <p class="text-xs text-slate-400">SpeechSTAR-Aligned Articulation Lab</p>
-                </div>
-            </div>
-            
-            <!-- API Key & Settings Status -->
-            <div class="flex items-center space-x-4">
-                <div class="hidden md:flex items-center space-x-2 bg-slate-800/80 px-3 py-1.5 rounded-full border border-slate-700">
-                    <span class="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-pulse"></span>
-                    <span class="text-xs font-semibold text-emerald-400">Gemini Live Ready</span>
-                </div>
-                <button onclick="toggleSettingsModal()" class="text-slate-400 hover:text-white transition p-2 rounded-lg hover:bg-slate-800" title="API Settings">
-                    <i data-lucide="settings" class="w-5 h-5"></i>
-                </button>
+    <!-- SideNavBar -->
+    <aside class="h-full w-64 fixed left-0 top-0 flex flex-col h-screen py-6 px-4 bg-surface/10 backdrop-blur-xl border-r border-on-surface/10 z-50">
+        <div class="mb-10 px-4">
+            <h1 class="font-display text-headline-md font-bold text-primary">Articulation AI</h1>
+            <p class="font-label-sm text-label-sm text-on-surface-variant/60">Speech Lab v1.0</p>
+        </div>
+        <nav class="flex-1 space-y-2">
+            <a class="flex items-center gap-3 px-4 py-3 text-primary font-bold border-r-2 border-primary hover:bg-surface-variant/20 transition-colors" href="#">
+                <span class="material-symbols-outlined">dashboard</span>
+                <span class="font-label-md text-label-md">Dashboard</span>
+            </a>
+            <a class="flex items-center gap-3 px-4 py-3 text-on-surface-variant font-label-md hover:bg-surface-variant/20 transition-colors" href="#history-section">
+                <span class="material-symbols-outlined">history</span>
+                <span class="font-label-md text-label-md">Practice History</span>
+            </a>
+            <a onclick="toggleSettingsModal()" class="flex items-center gap-3 px-4 py-3 text-on-surface-variant font-label-md hover:bg-surface-variant/20 transition-colors cursor-pointer">
+                <span class="material-symbols-outlined">settings</span>
+                <span class="font-label-md text-label-md">Settings</span>
+            </a>
+            <a onclick="toggleArticulatorInfoModal()" class="flex items-center gap-3 px-4 py-3 text-on-surface-variant font-label-md hover:bg-surface-variant/20 transition-colors cursor-pointer">
+                <span class="material-symbols-outlined">help_outline</span>
+                <span class="font-label-md text-label-md">Help</span>
+            </a>
+        </nav>
+        <div class="mt-auto px-4 py-4 flex items-center gap-3 glass-panel rounded-2xl">
+            <img alt="User Avatar" class="w-10 h-10 rounded-full object-cover border border-primary/30" src="https://lh3.googleusercontent.com/aida-public/AB6AXuC0LOuJ7xSH8YblcJsj6_XIUBhTB4VIGqB0PL5bwvO_XhuJeQctJ3fMrK65yiUvR3mTfTvPvUcD7FNaEyBnhQk4st7fKmEd7didvM7PxHK0ofq_bAwsWnZ7yvcNtVMfpPCaP7djx82S5_UB5eS-D37aGLgwL8tAtwhMZUCKeFQqN_AWJNJqkpJz9YNt5eU3aX5l-Afvan5u0vtkju9tUAr5rUSyUKlpDoLXWxWPMCfMDGM3BUR4YUPdJA"/>
+            <div>
+                <p class="font-label-md text-label-md font-bold">Dr. Aris Thorne</p>
+                <p class="text-xs text-on-surface-variant">Vocal Lead</p>
             </div>
         </div>
-    </header>
+    </aside>
 
-    <main class="flex-grow max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-8 grid grid-cols-1 lg:grid-cols-12 gap-8">
-        
-        <!-- Left Column: Controls & Input Area (lg:col-span-5) -->
-        <section class="lg:col-span-5 flex flex-col space-y-6">
+    <!-- Main Content Area -->
+    <main class="ml-64 flex-1 flex flex-col min-h-screen">
+        <!-- TopAppBar -->
+        <header class="fixed top-0 right-0 w-[calc(100%-16rem)] z-40 flex justify-between items-center h-16 px-10 bg-surface/10 backdrop-blur-xl border-b border-on-surface/10 shadow-sm">
+            <div class="flex items-center gap-4">
+                <span class="material-symbols-outlined text-primary">mic_external_on</span>
+                <h2 class="font-headline-md text-headline-md font-bold text-primary">Lab Environment</h2>
+            </div>
+            <div class="flex items-center gap-6">
+                <div id="gemini-status-badge" class="flex items-center gap-2 px-4 py-1.5 rounded-full bg-emerald-500/10 border border-emerald-500/20">
+                    <span class="w-2 h-2 rounded-full bg-secondary animate-pulse"></span>
+                    <span id="gemini-status-text" class="font-label-sm text-label-sm text-secondary uppercase tracking-widest">Gemini Ready</span>
+                </div>
+            </div>
+        </header>
+
+        <!-- Content Grid -->
+        <div class="mt-16 p-10 grid grid-cols-12 gap-gutter flex-1 overflow-y-auto scroll-hide">
             
-            <!-- Target Sentence Selection Card -->
-            <div class="glass rounded-2xl p-6 shadow-xl flex flex-col space-y-4 border border-slate-800">
-                <div class="flex items-center justify-between">
-                    <h2 class="text-sm font-bold uppercase tracking-wider text-indigo-400 flex items-center gap-2">
-                        <i data-lucide="target" class="w-4 h-4"></i> Step 1: Set Practice Target
-                    </h2>
-                </div>
+            <!-- Left Column: Controls (col-span-5) -->
+            <div class="col-span-5 flex flex-col gap-gutter">
                 
-                <div>
-                    <label class="block text-xs text-slate-400 mb-1.5 font-medium">Select a Preset or write your own:</label>
-                    <select id="preset-selector" onchange="usePreset()" class="w-full bg-slate-900 border border-slate-700 rounded-lg py-2.5 px-3 text-sm text-slate-200 focus:outline-none focus:ring-2 focus:ring-indigo-500 transition">
-                        <option value="She sells seashells by the seashore.">"She sells seashells by the seashore." (Sibilants)</option>
-                        <option value="Thirty-three thousand people thought that Thursday was their thirty-first birthday.">"Thirty-three thousand people" (Dental /th/ practice)</option>
-                        <option value="Peter Piper picked a peck of pickled peppers.">"Peter Piper picked a peck..." (Bilabial plosives)</option>
-                        <option value="Red leather, yellow leather.">"Red leather, yellow leather." (Alveolar liquids)</option>
-                        <option value="custom">✍️ Free Speech / Write Custom Sentence</option>
-                    </select>
-                </div>
-
-                <div id="custom-sentence-container" class="hidden">
-                    <label class="block text-xs text-slate-400 mb-1.5 font-medium">Target Sentence (Leave blank for Free-Speech recognition):</label>
-                    <textarea id="target-sentence" rows="2" placeholder="e.g., 'Hello, I want to improve my accent.'" class="w-full bg-slate-900/60 border border-slate-700 rounded-xl py-2.5 px-4 text-sm text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-indigo-500 transition resize-none"></textarea>
-                </div>
-            </div>
-
-            <!-- Recording Workstation -->
-            <div class="glass rounded-2xl p-6 shadow-xl flex flex-col space-y-6 relative overflow-hidden border border-slate-800">
-                <div class="absolute top-0 left-0 w-1.5 h-full bg-indigo-500"></div>
-                <div class="flex items-center justify-between">
-                    <h2 class="text-sm font-bold uppercase tracking-wider text-indigo-400 flex items-center gap-2">
-                        <i data-lucide="mic-2" class="w-4 h-4"></i> Step 2: Speak & Record
-                    </h2>
-                    <span id="recording-timer" class="text-xs font-mono text-slate-400 bg-slate-800 px-2 py-1 rounded">00:00</span>
-                </div>
-
-                <!-- Canvas-based Audio Waveform Visualizer -->
-                <div class="relative w-full h-32 bg-slate-950 rounded-xl border border-slate-800 flex items-center justify-center overflow-hidden">
-                    <canvas id="waveform-canvas" class="w-full h-full absolute inset-0 opacity-80"></canvas>
-                    <div id="recording-placeholder" class="z-10 flex flex-col items-center justify-center text-slate-500 space-y-2">
-                        <i data-lucide="audio-lines" class="w-8 h-8 animate-pulse text-indigo-500/50"></i>
-                        <span class="text-xs">Microphone wave visualizer</span>
+                <!-- Practice Target -->
+                <section class="glass-panel p-6 rounded-2xl flex flex-col gap-4">
+                    <div class="flex justify-between items-center">
+                        <h3 class="font-headline-md text-headline-md text-primary">Practice Target</h3>
+                        <span class="material-symbols-outlined text-on-surface-variant">edit_note</span>
                     </div>
-                </div>
-
-                <!-- Action Controls -->
-                <div class="flex flex-col space-y-3">
-                    <div class="flex gap-4">
-                        <button id="record-btn" onclick="toggleRecording()" class="flex-1 py-3 px-5 rounded-xl font-semibold flex items-center justify-center space-x-2 transition bg-indigo-600 hover:bg-indigo-500 text-white shadow-lg shadow-indigo-600/25">
-                            <i data-lucide="play" class="w-5 h-5" id="record-btn-icon"></i>
-                            <span id="record-btn-text">Start Recording</span>
-                        </button>
-                        
-                        <button id="play-recorded-btn" onclick="playLastRecorded()" disabled class="py-3 px-4 rounded-xl font-semibold flex items-center justify-center transition bg-slate-800 border border-slate-700 text-slate-300 hover:text-white hover:bg-slate-700 disabled:opacity-40 disabled:cursor-not-allowed" title="Play last recording">
-                            <i data-lucide="volume-2" class="w-5 h-5"></i>
-                        </button>
+                    <div class="relative">
+                        <select id="preset-selector" onchange="usePreset()" class="w-full bg-surface-container-low border border-outline-variant rounded-xl px-4 py-3 font-body-md text-on-surface focus:border-primary focus:ring-1 focus:ring-primary outline-none appearance-none cursor-pointer">
+                            <option value="She sells seashells by the seashore.">"She sells seashells by the seashore." (Sibilants)</option>
+                            <option value="Thirty-three thousand people thought that Thursday was their thirty-first birthday.">"Thirty-three thousand people" (Dental /th/ practice)</option>
+                            <option value="Peter Piper picked a peck of pickled peppers.">"Peter Piper picked a peck..." (Bilabial plosives)</option>
+                            <option value="Red leather, yellow leather.">"Red leather, yellow leather." (Alveolar liquids)</option>
+                            <option value="custom">✍️ Free Speech / Write Custom Sentence</option>
+                        </select>
+                        <span class="material-symbols-outlined absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none text-on-surface-variant">expand_more</span>
                     </div>
+                    <textarea id="target-sentence" class="w-full bg-surface-container-low border border-outline-variant rounded-xl px-4 py-3 font-body-md text-on-surface-variant h-32 focus:border-primary focus:ring-1 focus:ring-primary outline-none resize-none" placeholder="Enter custom practice sentences...">She sells seashells by the seashore.</textarea>
+                </section>
 
-                    <div id="audio-player-container" class="hidden flex items-center space-x-2 bg-slate-900/60 p-2 rounded-lg border border-slate-800">
-                        <span class="text-xs text-slate-400 font-mono">Audio file:</span>
-                        <audio id="audio-playback" controls class="h-8 flex-1 outline-none"></audio>
+                <!-- Audio Workstation -->
+                <section class="glass-panel p-8 rounded-2xl flex flex-col items-center justify-center gap-6 relative overflow-hidden">
+                    <div class="text-center">
+                        <p class="font-label-sm text-label-sm text-secondary uppercase tracking-[0.2em] mb-2" id="signal-status-label">Signal Status</p>
+                        <h4 class="font-headline-md text-headline-md" id="recording-status-text">Ready to Record</h4>
+                        <span id="recording-timer" class="text-xs font-mono text-on-surface-variant/60 bg-surface-container-low px-2 py-1 rounded mt-1 inline-block">00:00</span>
                     </div>
-
-                    <!-- Sandbox Mode Access -->
-                    <button onclick="loadSampleDiagnostic()" class="w-full py-2 bg-slate-800/50 border border-slate-700/80 rounded-xl hover:bg-slate-800 transition text-xs font-semibold text-indigo-300 flex items-center justify-center gap-1.5">
-                        <i data-lucide="zap" class="w-4 h-4"></i> Run Demo Diagnostic
-                    </button>
-                </div>
-            </div>
-
-            <!-- Simple History Log -->
-            <div class="glass rounded-2xl p-6 shadow-xl flex flex-col space-y-3 border border-slate-800">
-                <div class="flex justify-between items-center">
-                    <h3 class="text-xs font-bold uppercase tracking-wider text-slate-400 flex items-center gap-1.5">
-                        <i data-lucide="history" class="w-4 h-4"></i> Practice History
-                    </h3>
-                    <button onclick="clearHistory()" class="text-[10px] text-red-400 hover:underline">Clear Log</button>
-                </div>
-                <div id="history-container" class="space-y-2 max-h-40 overflow-y-auto pr-1">
-                    <div class="text-xs text-slate-500 text-center py-4">No recent practice runs. Use Demo or speak into your mic to log.</div>
-                </div>
-            </div>
-
-        </section>
-
-        <!-- Right Column: Interactive Pronunciation Diagnostic Panel (lg:col-span-7) -->
-        <section class="lg:col-span-7 flex flex-col space-y-6">
-
-            <!-- Loading State -->
-            <div id="loading-state" class="hidden glass rounded-3xl p-12 shadow-xl flex flex-col items-center justify-center space-y-6 text-center animate-pulse border border-slate-800">
-                <div class="relative flex items-center justify-center">
-                    <div class="absolute w-24 h-24 rounded-full border-4 border-indigo-500/20 border-t-indigo-500 animate-spin"></div>
-                    <i data-lucide="brain-circuit" class="w-10 h-10 text-indigo-400 animate-bounce"></i>
-                </div>
-                <div class="space-y-2">
-                    <h3 class="text-lg font-bold text-white">Analyzing Phonetics & Mouth Mechanics</h3>
-                    <p class="text-sm text-slate-400 max-w-md">Gemini is analyzing phonetic traits and comparing mouth mechanics against SpeechSTAR guidelines...</p>
-                </div>
-                <div class="w-full max-w-xs bg-slate-800 rounded-full h-1.5 overflow-hidden">
-                    <div class="bg-indigo-500 h-1.5 rounded-full animate-infinite-loading w-2/3"></div>
-                </div>
-            </div>
-
-            <!-- Blank State (Displayed before first recording) -->
-            <div id="blank-state" class="glass rounded-3xl p-12 shadow-xl flex flex-col items-center justify-center text-center space-y-6 min-h-[500px] border border-slate-800">
-                <div class="bg-indigo-500/10 p-5 rounded-full border border-indigo-500/20">
-                    <i data-lucide="sparkles" class="w-12 h-12 text-indigo-400"></i>
-                </div>
-                <div class="space-y-2">
-                    <h3 class="text-xl font-bold text-white">Interactive Speech Clinic</h3>
-                    <p class="text-sm text-slate-400 max-sm mx-auto">
-                        Speak a sentence or use the <span class="text-indigo-400 font-bold">"Run Demo Diagnostic"</span> button to immediately load a detailed analysis complete with visual biomechanics.
-                    </p>
-                </div>
-                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 max-w-md w-full pt-4">
-                    <div class="p-3 bg-slate-900/60 rounded-xl border border-slate-800 flex items-start space-x-2.5 text-left">
-                        <i data-lucide="speech" class="w-5 h-5 text-indigo-400 mt-0.5"></i>
-                        <div>
-                            <h4 class="text-xs font-bold text-slate-300">Acoustic Alignment</h4>
-                            <p class="text-[11px] text-slate-500">Detects mispronunciations, tone shifts, and syllable stress errors.</p>
-                        </div>
-                    </div>
-                    <div class="p-3 bg-slate-900/60 rounded-xl border border-slate-800 flex items-start space-x-2.5 text-left">
-                        <i data-lucide="activity-square" class="w-5 h-5 text-violet-400 mt-0.5"></i>
-                        <div>
-                            <h4 class="text-xs font-bold text-slate-300">Biomechanical Animations</h4>
-                            <p class="text-[11px] text-slate-500">Guides your teeth, jaw, and tongue positioning in real-time.</p>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Results Dashboard Panel -->
-            <div id="results-dashboard" class="hidden flex flex-col space-y-6">
-                
-                <!-- Score & Key Metrics Header Card -->
-                <div class="glass rounded-2xl p-6 shadow-xl relative overflow-hidden bg-gradient-to-r from-slate-900 via-indigo-950/20 to-slate-900 border border-slate-800">
-                    <div class="absolute -right-12 -top-12 w-48 h-48 bg-indigo-500/10 rounded-full blur-3xl pointer-events-none"></div>
                     
-                    <div class="grid grid-cols-1 md:grid-cols-12 gap-6 items-center">
+                    <!-- Visualizer Canvas -->
+                    <div class="relative w-full h-32 bg-surface-container-lowest rounded-xl border border-outline-variant flex items-center justify-center overflow-hidden">
+                        <canvas id="waveform-canvas" class="w-full h-full absolute inset-0 opacity-80"></canvas>
+                        <div id="recording-placeholder" class="z-10 flex flex-col items-center justify-center text-on-surface-variant/40 space-y-2">
+                            <span class="material-symbols-outlined text-4xl text-primary/50 animate-pulse">audio_file</span>
+                            <span class="text-xs">Microphone wave visualizer</span>
+                        </div>
+                    </div>
+
+                    <!-- Record Button -->
+                    <button id="record-btn" onclick="toggleRecording()" class="glowing-record w-24 h-24 rounded-full bg-primary-container flex items-center justify-center transition-all group active:scale-95">
+                        <span class="material-symbols-outlined text-on-primary-container text-4xl group-hover:scale-110 transition-transform">mic</span>
+                    </button>
+
+                    <div class="flex gap-4 mt-2">
+                        <button id="play-recorded-btn" onclick="playLastRecorded()" disabled class="px-6 py-2 rounded-full border border-outline-variant font-label-md text-on-surface-variant hover:bg-surface-variant/20 disabled:opacity-40 disabled:cursor-not-allowed">Playback</button>
+                    </div>
+
+                    <div id="audio-player-container" class="hidden">
+                        <audio id="audio-playback" controls class="outline-none"></audio>
+                    </div>
+
+                    <!-- Demo Button -->
+                    <button onclick="loadSampleDiagnostic()" class="w-full py-2 bg-surface-container-high border border-outline-variant rounded-xl hover:bg-surface-variant/20 transition text-xs font-semibold text-primary flex items-center justify-center gap-1.5 mt-2">
+                        <span class="material-symbols-outlined text-sm">bolt</span> Run Demo Diagnostic
+                    </button>
+                </section>
+
+                <!-- Practice History -->
+                <section id="history-section" class="glass-panel p-6 rounded-2xl flex flex-col gap-3">
+                    <div class="flex justify-between items-center">
+                        <h3 class="font-label-md text-label-md text-on-surface-variant uppercase tracking-widest flex items-center gap-1.5">
+                            <span class="material-symbols-outlined text-sm">history</span> Practice History
+                        </h3>
+                        <button onclick="clearHistory()" class="text-xs text-error hover:underline">Clear Log</button>
+                    </div>
+                    <div id="history-container" class="space-y-2 max-h-40 overflow-y-auto pr-1">
+                        <div class="text-xs text-on-surface-variant/40 text-center py-4">No recent practice runs. Use Demo or speak into your mic to log.</div>
+                    </div>
+                </section>
+
+            </div>
+
+            <!-- Right Column: Diagnostics (col-span-7) -->
+            <div class="col-span-7 flex flex-col gap-gutter">
+                
+                <!-- Blank State -->
+                <div id="blank-state" class="glass-panel rounded-2xl p-12 flex flex-col items-center justify-center text-center space-y-6 min-h-[500px]">
+                    <div class="bg-primary/10 p-5 rounded-full border border-primary/20">
+                        <span class="material-symbols-outlined text-5xl text-primary animate-pulse">auto_awesome</span>
+                    </div>
+                    <div class="space-y-2">
+                        <h3 class="text-xl font-bold text-on-surface font-display">Interactive Speech Clinic</h3>
+                        <p class="text-sm text-on-surface-variant max-w-sm mx-auto">
+                            Speak a sentence or use the <span class="text-primary font-bold">"Run Demo Diagnostic"</span> button to immediately load a detailed analysis complete with visual biomechanics.
+                        </p>
+                    </div>
+                </div>
+
+                <!-- Loading State -->
+                <div id="loading-state" class="hidden glass-panel rounded-2xl p-12 flex flex-col items-center justify-center space-y-6 text-center animate-pulse min-h-[500px]">
+                    <div class="relative flex items-center justify-center">
+                        <div class="absolute w-24 h-24 rounded-full border-4 border-primary/20 border-t-primary animate-spin"></div>
+                        <span class="material-symbols-outlined text-4xl text-primary animate-bounce">psychology</span>
+                    </div>
+                    <div class="space-y-2">
+                        <h3 class="text-lg font-bold text-on-surface font-display">Analyzing Phonetics & Mouth Mechanics</h3>
+                        <p class="text-sm text-on-surface-variant max-w-md">Gemini is analyzing phonetic traits and comparing mouth mechanics against SpeechSTAR guidelines...</p>
+                    </div>
+                </div>
+
+                <!-- Results Dashboard -->
+                <div id="results-dashboard" class="hidden flex flex-col gap-gutter">
+                    
+                    <!-- Transcription Card -->
+                    <section class="glass-panel p-6 rounded-2xl flex flex-col gap-3">
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div>
+                                <span class="text-xs text-on-surface-variant/60 uppercase font-bold tracking-wider">What We Heard</span>
+                                <p id="heard-sentence" class="text-sm text-error italic font-medium mt-1">"..."</p>
+                            </div>
+                            <div>
+                                <div class="flex justify-between items-center">
+                                    <span class="text-xs text-on-surface-variant/60 uppercase font-bold tracking-wider">Intended Target</span>
+                                    <button onclick="speakCorrectSentence()" class="text-primary hover:text-primary/80 transition" title="Listen">
+                                        <span class="material-symbols-outlined text-sm">volume_up</span>
+                                    </button>
+                                </div>
+                                <p id="corrected-sentence" class="text-sm text-secondary font-medium mt-1">"..."</p>
+                            </div>
+                        </div>
+                    </section>
+
+                    <!-- Articulatory Map Card -->
+                    <section class="glass-panel rounded-2xl flex flex-col relative overflow-hidden">
+                        <div class="p-6 flex justify-between items-center border-b border-on-surface/10">
+                            <div>
+                                <h3 class="font-headline-md text-headline-md text-primary">Articulatory Map</h3>
+                                <p class="font-label-sm text-label-sm text-on-surface-variant">Real-time Sagittal Cross-section</p>
+                            </div>
+                            <div class="flex gap-2">
+                                <span onclick="toggleArticulatorInfoModal()" class="material-symbols-outlined cursor-pointer hover:text-primary transition-colors">help</span>
+                            </div>
+                        </div>
                         
-                        <!-- Circular Score Gauge -->
-                        <div class="md:col-span-4 flex flex-col items-center justify-center border-b md:border-b-0 md:border-r border-slate-800 pb-6 md:pb-0 md:pr-6">
-                            <div class="relative flex items-center justify-center">
-                                <svg class="w-32 h-32 transform -rotate-90">
-                                    <circle cx="64" cy="64" r="54" stroke="rgba(255, 255, 255, 0.05)" stroke-width="8" fill="transparent"/>
-                                    <circle id="score-circle" cx="64" cy="64" r="54" stroke="url(#indigoGrad)" stroke-width="8" fill="transparent"
-                                            stroke-dasharray="339.29" stroke-dashoffset="100"/>
+                        <!-- Map Container -->
+                        <div class="articulatory-map-container h-[350px] w-full relative bg-surface-container-highest overflow-hidden flex items-center justify-center">
+                            <canvas id="articulator-canvas" width="512" height="279" class="bg-transparent"></canvas>
+                            
+                            <!-- Manual triggers overlay -->
+                            <div class="absolute bottom-4 left-4 flex flex-wrap gap-2 max-w-sm">
+                                <button onclick="animateArticulators('tongue-tip')" class="px-3 py-1 rounded-full glass-panel border-outline-variant text-on-surface-variant font-label-md text-xs hover:border-primary/40 transition-all">Tongue Tip</button>
+                                <button onclick="animateArticulators('lips')" class="px-3 py-1 rounded-full glass-panel border-outline-variant text-on-surface-variant font-label-md text-xs hover:border-primary/40 transition-all">Lips</button>
+                                <button onclick="animateArticulators('dental')" class="px-3 py-1 rounded-full glass-panel border-outline-variant text-on-surface-variant font-label-md text-xs hover:border-primary/40 transition-all">Jaw/Dental</button>
+                                <button onclick="animateArticulators('tongue-back')" class="px-3 py-1 rounded-full glass-panel border-outline-variant text-on-surface-variant font-label-md text-xs hover:border-primary/40 transition-all">Velum</button>
+                            </div>
+                            
+                            <!-- Status badge overlay -->
+                            <div class="absolute top-4 right-4 flex flex-col gap-2">
+                                <span id="current-articulator-badge" class="text-xs text-primary bg-primary/10 px-2 py-1 rounded border border-primary/20 font-bold uppercase tracking-wider">Neutral</span>
+                            </div>
+                        </div>
+                        
+                        <!-- Description at bottom of card -->
+                        <div class="p-4 bg-surface-container-low border-t border-on-surface/10">
+                            <h4 class="text-xs font-bold text-primary uppercase tracking-wider mb-1 flex items-center justify-between">
+                                <span>Active Mechanical Focus</span>
+                                <span class="material-symbols-outlined text-sm">analytics</span>
+                            </h4>
+                            <p id="interactive-mechanics-desc" class="text-xs text-on-surface-variant leading-relaxed">Select a mispronounced word from the breakdown below to inspect specific biomechanical placements.</p>
+                        </div>
+                    </section>
+
+                    <!-- Bottom Grid: Accuracy & Pitfalls -->
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-gutter">
+                        
+                        <!-- Accuracy Score -->
+                        <section class="glass-panel p-6 rounded-2xl flex items-center gap-6">
+                            <div class="relative w-24 h-24 flex items-center justify-center">
+                                <div class="absolute inset-0 rounded-full border-4 border-surface-container-highest"></div>
+                                <svg class="w-24 h-24 transform -rotate-90">
+                                    <circle cx="48" cy="48" r="40" stroke="rgba(255, 255, 255, 0.05)" stroke-width="6" fill="transparent"/>
+                                    <circle id="score-circle" cx="48" cy="48" r="40" stroke="url(#primaryGrad)" stroke-width="6" fill="transparent"
+                                            stroke-dasharray="251.32" stroke-dashoffset="251.32"/>
                                     <defs>
-                                        <linearGradient id="indigoGrad" x1="0%" y1="0%" x2="100%" y2="100%">
-                                            <stop offset="0%" stop-color="#6366f1"/>
-                                            <stop offset="100%" stop-color="#a855f7"/>
+                                        <linearGradient id="primaryGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+                                            <stop offset="0%" stop-color="#d0bcff"/>
+                                            <stop offset="100%" stop-color="#4edea3"/>
                                         </linearGradient>
                                     </defs>
                                 </svg>
-                                <div class="absolute flex flex-col items-center">
-                                    <span id="score-text" class="text-3xl font-extrabold text-white">85</span>
-                                    <span class="text-[10px] text-slate-400 font-bold tracking-wider uppercase">Accuracy</span>
-                                </div>
+                                <span id="score-text" class="absolute font-display text-headline-md text-secondary">0%</span>
                             </div>
-                        </div>
-
-                        <!-- Pronunciation Correction Flow -->
-                        <div class="md:col-span-8 space-y-4">
-                            <div class="flex items-center space-x-2">
-                                <span class="text-xs bg-indigo-500/15 text-indigo-300 font-semibold px-2.5 py-1 rounded-full border border-indigo-500/25 flex items-center gap-1">
-                                    <i data-lucide="sparkles" class="w-3 h-3"></i> Biomechanical Diagnostics
-                                </span>
-                            </div>
-
-                            <div class="space-y-3">
-                                <div>
-                                    <div class="text-xs text-slate-400 mb-1 flex items-center gap-1.5"><i data-lucide="voice-search" class="w-3.5 h-3.5 text-red-400"></i> What We Heard:</div>
-                                    <p id="heard-sentence" class="text-sm text-slate-300 italic pl-3 border-l-2 border-red-500 bg-red-950/10 py-1.5 rounded-r">"..."</p>
-                                </div>
-                                <div>
-                                    <div class="text-xs text-slate-400 mb-1 flex items-center gap-1.5"><i data-lucide="check-circle" class="w-3.5 h-3.5 text-emerald-400"></i> Intended Correction:</div>
-                                    <div class="flex items-center justify-between pl-3 border-l-2 border-emerald-500 bg-emerald-950/10 py-1 rounded-r">
-                                        <p id="corrected-sentence" class="text-sm font-semibold text-white">"..."</p>
-                                        <!-- TTS Playback for Intended Correct Sentence -->
-                                        <button onclick="speakCorrectSentence()" class="p-2 text-indigo-400 hover:text-indigo-300 hover:bg-slate-800 rounded-lg transition" title="Listen to Perfect Articulation">
-                                            <i data-lucide="volume-2" class="w-5 h-5"></i>
-                                        </button>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Interactive Cross-Section SpeechSTAR Simulator -->
-                <div class="glass rounded-2xl p-6 shadow-xl border border-slate-800 flex flex-col space-y-4">
-                    <div class="flex items-center justify-between">
-                        <div class="flex items-center gap-2">
-                            <h3 class="text-sm font-bold uppercase tracking-wider text-indigo-400 flex items-center gap-2">
-                                <i data-lucide="smile" class="w-4 h-4"></i> Articulatory Map
-                            </h3>
-                            <button onclick="toggleArticulatorInfoModal()" class="text-slate-500 hover:text-indigo-400 transition" title="How to read this map">
-                                <i data-lucide="help-circle" class="w-4 h-4"></i>
-                            </button>
-                        </div>
-                        <span class="text-xs text-indigo-300 bg-indigo-500/10 px-2 py-1 rounded border border-indigo-500/20 font-bold uppercase tracking-wider" id="current-articulator-badge">Tongue Tip</span>
-                    </div>
-
-                    <div class="grid grid-cols-1 md:grid-cols-12 gap-6 items-center">
-                        <div class="md:col-span-5 flex justify-center bg-slate-950 p-4 rounded-xl border border-slate-800/80">
-                            <div class="relative">
-                                <canvas id="articulator-canvas" class="w-56 h-56 bg-slate-950"></canvas>
-                                <!-- Legend floating on canvas for clarity -->
-                                <div class="absolute bottom-2 left-2 flex flex-col gap-1 pointer-events-none opacity-60">
-                                    <div class="flex items-center gap-1.5"><div class="w-2 h-2 rounded-full bg-violet-400"></div><span class="text-[9px]">Tongue</span></div>
-                                    <div class="flex items-center gap-1.5"><div class="w-2 h-2 bg-white"></div><span class="text-[9px]">Teeth</span></div>
-                                    <div class="flex items-center gap-1.5"><div class="w-2 h-2 rounded-full bg-rose-400"></div><span class="text-[9px]">Lips</span></div>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="md:col-span-7 space-y-4">
-                            <div class="bg-indigo-950/20 p-3.5 rounded-lg border border-indigo-900/30 min-h-[100px]">
-                                <h4 class="text-xs font-bold text-indigo-300 uppercase tracking-wider mb-1.5 flex items-center justify-between">
-                                    <span>Active Mechanical Focus</span>
-                                    <i data-lucide="activity" class="w-3 h-3"></i>
-                                </h4>
-                                <p id="interactive-mechanics-desc" class="text-xs text-slate-300 leading-relaxed">Select a mispronounced word from the breakdown below to inspect specific SpeechSTAR biomechanical placements.</p>
-                            </div>
-                            <div class="grid grid-cols-2 gap-2">
-                                <button onclick="animateArticulators('tongue-tip')" class="px-2 py-1.5 text-[10px] bg-slate-800 hover:bg-indigo-950/60 rounded border border-slate-700 hover:border-indigo-500/50 transition font-medium">Tongue Tip</button>
-                                <button onclick="animateArticulators('lips')" class="px-2 py-1.5 text-[10px] bg-slate-800 hover:bg-indigo-950/60 rounded border border-slate-700 hover:border-indigo-500/50 transition font-medium">Lips (Bilabial)</button>
-                                <button onclick="animateArticulators('tongue-back')" class="px-2 py-1.5 text-[10px] bg-slate-800 hover:bg-indigo-950/60 rounded border border-slate-700 hover:border-indigo-500/50 transition font-medium">Velum (Back)</button>
-                                <button onclick="animateArticulators('dental')" class="px-2 py-1.5 text-[10px] bg-slate-800 hover:bg-indigo-950/60 rounded border border-slate-700 hover:border-indigo-500/50 transition font-medium">Dental (/th/)</button>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Dynamic Words Breakdown Card -->
-                <div class="glass rounded-2xl p-6 shadow-xl flex flex-col space-y-4 border border-slate-800">
-                    <h3 class="text-sm font-bold uppercase tracking-wider text-indigo-400 flex items-center gap-2">
-                        <i data-lucide="alert-triangle" class="w-4 h-4"></i> Phonetic Pitfall Breakdown
-                    </h3>
-                    
-                    <div id="words-analysis-container" class="space-y-4 divide-y divide-slate-800/80">
-                        <!-- Instantiated dynamically -->
-                    </div>
-                </div>
-
-                <!-- Physiological Mouth/Tongue Bio-mechanics Guide -->
-                <div class="glass rounded-2xl p-6 shadow-xl flex flex-col space-y-5 relative overflow-hidden bg-gradient-to-br from-slate-900 to-violet-950/10 border border-slate-800">
-                    <div class="flex items-center space-x-3">
-                        <div class="p-2 bg-violet-500/10 rounded-lg border border-violet-500/20">
-                            <i data-lucide="activity" class="w-5 h-5 text-violet-400"></i>
-                        </div>
-                        <div>
-                            <h3 class="text-sm font-bold uppercase tracking-wider text-violet-400">Global Structural Guidance</h3>
-                            <p class="text-xs text-slate-400">Alignment patterns aligned with SpeechSTAR therapy frameworks</p>
-                        </div>
-                    </div>
-
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        <div class="p-4 bg-slate-950/50 rounded-xl border border-slate-800 flex space-x-3.5">
-                            <div class="text-violet-400 mt-1"><i data-lucide="columns-3" class="w-5 h-5"></i></div>
                             <div>
-                                <h4 class="text-xs font-bold text-slate-200 uppercase tracking-wide">Tongue Alignment</h4>
-                                <p id="tongue-guide" class="text-xs text-slate-400 mt-1 leading-relaxed">...</p>
+                                <h4 class="font-headline-md text-headline-md">Accuracy</h4>
+                                <p id="accuracy-feedback" class="font-body-md text-on-surface-variant">Record your speech to see your accuracy score.</p>
                             </div>
-                        </div>
-                        <div class="p-4 bg-slate-950/50 rounded-xl border border-slate-800 flex space-x-3.5">
-                            <div class="text-violet-400 mt-1"><i data-lucide="smile" class="w-5 h-5"></i></div>
-                            <div>
-                                <h4 class="text-xs font-bold text-slate-200 uppercase tracking-wide">Jaw & Teeth Position</h4>
-                                <p id="jaw-guide" class="text-xs text-slate-400 mt-1 leading-relaxed">...</p>
+                        </section>
+
+                        <!-- Pitfalls breakdown -->
+                        <section class="glass-panel p-6 rounded-2xl flex flex-col gap-3">
+                            <div class="flex items-center justify-between">
+                                <h4 class="font-label-md text-label-md text-on-surface-variant uppercase tracking-widest">Phonetic Pitfalls</h4>
+                                <span class="material-symbols-outlined text-primary">list</span>
                             </div>
-                        </div>
+                            <div id="words-analysis-container" class="space-y-3 max-h-60 overflow-y-auto pr-1">
+                                <!-- Dynamic error cards -->
+                            </div>
+                        </section>
+
                     </div>
 
-                    <div class="p-4 bg-slate-900/40 rounded-xl border border-slate-800 flex items-start space-x-3">
-                        <i data-lucide="wind" class="w-5 h-5 text-indigo-400 mt-0.5"></i>
-                        <div>
-                            <h4 class="text-xs font-bold text-slate-200">Global Vocal Airflow Advice</h4>
-                            <p id="global-muscle-guide" class="text-xs text-slate-400 mt-1 leading-relaxed">...</p>
+                    <!-- Global Guidance -->
+                    <section class="glass-panel p-6 rounded-2xl flex flex-col gap-4">
+                        <h4 class="font-label-md text-label-md text-primary uppercase tracking-widest">Global Guidance</h4>
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                            <div class="p-3 bg-surface-container-low rounded-xl border border-outline-variant">
+                                <span class="text-xs text-primary font-bold uppercase">Tongue</span>
+                                <p id="tongue-guide" class="text-xs text-on-surface-variant mt-1">...</p>
+                            </div>
+                            <div class="p-3 bg-surface-container-low rounded-xl border border-outline-variant">
+                                <span class="text-xs text-primary font-bold uppercase">Jaw</span>
+                                <p id="jaw-guide" class="text-xs text-on-surface-variant mt-1">...</p>
+                            </div>
+                            <div class="p-3 bg-surface-container-low rounded-xl border border-outline-variant">
+                                <span class="text-xs text-primary font-bold uppercase">Airflow</span>
+                                <p id="global-muscle-guide" class="text-xs text-on-surface-variant mt-1">...</p>
+                            </div>
                         </div>
-                    </div>
+                    </section>
+
                 </div>
 
             </div>
 
-        </section>
-
+        </div>
     </main>
 
-    <!-- Articulatory Map Guide Modal -->
-    <div id="articulator-info-modal" class="fixed inset-0 bg-slate-950/90 z-[60] flex items-center justify-center p-4 backdrop-blur-md hidden">
-        <div class="glass max-w-lg w-full rounded-3xl p-8 shadow-2xl relative border border-slate-800">
-            <button onclick="toggleArticulatorInfoModal()" class="absolute top-6 right-6 text-slate-400 hover:text-white transition">
-                <i data-lucide="x" class="w-6 h-6"></i>
-            </button>
-            
-            <div class="flex items-center space-x-4 mb-8">
-                <div class="bg-indigo-500/20 p-3 rounded-2xl border border-indigo-500/30">
-                    <i data-lucide="map" class="w-6 h-6 text-indigo-400"></i>
-                </div>
-                <div>
-                    <h3 class="text-xl font-bold text-white">Understanding the Map</h3>
-                    <p class="text-sm text-slate-400">A side-view (sagittal) cross-section guide</p>
-                </div>
-            </div>
-
-            <div class="space-y-5">
-                <div class="flex items-start gap-4 p-3 rounded-xl bg-slate-900/40 border border-slate-800">
-                    <div class="w-8 h-8 rounded-lg bg-violet-500/20 border border-violet-500/40 flex shrink-0 items-center justify-center font-bold text-violet-400 text-xs">T</div>
-                    <div>
-                        <h4 class="text-sm font-bold text-white mb-0.5">The Purple Shape (Tongue)</h4>
-                        <p class="text-xs text-slate-400">Your most active articulator. Watch it rise to touch the roof (Palate), pull back to the Velum, or protrude for Dental sounds.</p>
-                    </div>
-                </div>
-
-                <div class="flex items-start gap-4 p-3 rounded-xl bg-slate-900/40 border border-slate-800">
-                    <div class="w-8 h-8 rounded-lg bg-slate-100 flex shrink-0 items-center justify-center font-bold text-slate-950 text-xs">W</div>
-                    <div>
-                        <h4 class="text-sm font-bold text-white mb-0.5">White Rectangles (Teeth)</h4>
-                        <p class="text-xs text-slate-400">Fixed reference points. Helpful for anchoring the tongue tip or measuring jaw gap.</p>
-                    </div>
-                </div>
-
-                <div class="flex items-start gap-4 p-3 rounded-xl bg-slate-900/40 border border-slate-800">
-                    <div class="w-8 h-8 rounded-lg bg-rose-500/20 border border-rose-500/40 flex shrink-0 items-center justify-center font-bold text-rose-400 text-xs">L</div>
-                    <div>
-                        <h4 class="text-sm font-bold text-white mb-0.5">Red Curves (Lips)</h4>
-                        <p class="text-xs text-slate-400">Vital for Bilabial (P, B, M) and Labiodental (F, V) sounds. They animate to show closure or rounding.</p>
-                    </div>
-                </div>
-
-                <div class="flex items-start gap-4 p-3 rounded-xl bg-slate-900/40 border border-slate-800">
-                    <div class="w-8 h-8 rounded-lg bg-indigo-500/20 border border-indigo-500/40 flex shrink-0 items-center justify-center font-bold text-indigo-400 text-xs italic">A</div>
-                    <div>
-                        <h4 class="text-sm font-bold text-white mb-0.5">Dashed Blue Line (Airflow)</h4>
-                        <p class="text-xs text-slate-400">Visualizes breath movement. A solid blockage means a 'Stop' sound; continuous flow through a gap means a 'Fricative'.</p>
-                    </div>
-                </div>
-            </div>
-
-            <button onclick="toggleArticulatorInfoModal()" class="w-full mt-8 py-3 bg-indigo-600 hover:bg-indigo-500 text-white font-bold rounded-xl transition shadow-lg shadow-indigo-600/20">
-                Got it, let's practice
-            </button>
-        </div>
+    <!-- Background Decoration Gradients -->
+    <div class="fixed inset-0 -z-10 pointer-events-none">
+        <div class="absolute top-0 right-0 w-[800px] h-[800px] bg-primary/5 rounded-full blur-[120px] -translate-y-1/2 translate-x-1/2"></div>
+        <div class="absolute bottom-0 left-0 w-[600px] h-[600px] bg-secondary/5 rounded-full blur-[100px] translate-y-1/2 -translate-x-1/4"></div>
     </div>
 
     <!-- Settings Modal -->
-    <div id="settings-modal" class="fixed inset-0 bg-slate-950/85 z-50 flex items-center justify-center p-4 backdrop-blur-sm hidden">
-        <div class="glass max-w-md w-full rounded-2xl p-6 shadow-2xl relative border border-slate-800">
-            <button onclick="toggleSettingsModal()" class="absolute top-4 right-4 text-slate-400 hover:text-white transition">
-                <i data-lucide="x" class="w-5 h-5"></i>
+    <div id="settings-modal" class="fixed inset-0 bg-background/80 z-50 flex items-center justify-center p-4 backdrop-blur-md hidden">
+        <div class="glass-panel max-w-md w-full rounded-2xl p-6 shadow-2xl relative">
+            <button onclick="toggleSettingsModal()" class="absolute top-4 right-4 text-on-surface-variant hover:text-primary transition">
+                <span class="material-symbols-outlined">close</span>
             </button>
             <div class="flex items-center space-x-3 mb-6">
-                <i data-lucide="sliders" class="w-6 h-6 text-indigo-400"></i>
-                <h3 class="text-lg font-bold text-white">Diagnostic Configurations</h3>
+                <span class="material-symbols-outlined text-primary">settings</span>
+                <h3 class="text-lg font-bold text-primary font-display">Diagnostic Configurations</h3>
             </div>
             
             <div class="space-y-4">
                 <div>
-                    <label class="block text-xs font-semibold text-slate-300 mb-1.5">Gemini API Key Override:</label>
-                    <input id="api-key-input" type="password" value="" placeholder="Using system key..." class="w-full bg-slate-900 border border-slate-700 rounded-lg py-2.5 px-3.5 text-xs text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-indigo-500 transition">
+                    <label class="block text-xs font-semibold text-on-surface-variant mb-1.5 font-label-md">Gemini API Key Override:</label>
+                    <input id="api-key-input" type="password" value="" placeholder="Using system key..." class="w-full bg-surface-container-low border border-outline-variant rounded-lg py-2.5 px-3.5 text-xs text-on-surface placeholder-on-surface-variant/40 focus:border-primary focus:ring-1 focus:ring-primary outline-none">
                 </div>
 
                 <div>
-                    <label class="block text-xs font-semibold text-slate-300 mb-1.5">Pronunciation Reference Accent:</label>
-                    <select id="native-accent" class="w-full bg-slate-900 border border-slate-700 rounded-lg py-2 px-3 text-xs text-slate-200 focus:outline-none focus:ring-2 focus:ring-indigo-500 transition">
+                    <label class="block text-xs font-semibold text-on-surface-variant mb-1.5 font-label-md">Pronunciation Reference Accent:</label>
+                    <select id="native-accent" class="w-full bg-surface-container-low border border-outline-variant rounded-lg py-2 px-3 text-xs text-on-surface focus:border-primary focus:ring-1 focus:ring-primary outline-none">
                         <option value="General American (US)">General American (US Accent)</option>
                         <option value="Received Pronunciation (UK)">Received Pronunciation (UK Oxford)</option>
                     </select>
                 </div>
 
                 <div>
-                    <label class="block text-xs font-semibold text-slate-300 mb-1.5">AI Model (better audio understanding):</label>
-                    <select id="model-selector" class="w-full bg-slate-900 border border-slate-700 rounded-lg py-2 px-3 text-xs text-slate-200 focus:outline-none focus:ring-2 focus:ring-indigo-500 transition">
-                        <option value="gemini-2.5-pro">Gemini 2.5 Pro (Recommended for Audio)</option>
-                        <option value="gemini-2.5-flash" selected>Gemini 2.5 Flash (Fast)</option>
-                        <option value="gemini-1.5-pro">Gemini 1.5 Pro (High Compatibility)</option>
-                        <option value="gemini-1.5-flash">Gemini 1.5 Flash</option>
+                    <label class="block text-xs font-semibold text-on-surface-variant mb-1.5 font-label-md">AI Model:</label>
+                    <select id="model-selector" class="w-full bg-surface-container-low border border-outline-variant rounded-lg py-2 px-3 text-xs text-on-surface focus:border-primary focus:ring-1 focus:ring-primary outline-none">
+                        <option value="gemini-3.5-flash" selected>Gemini 3.5 Flash (Recommended)</option>
+                        <option value="gemini-3.1-pro-preview">Gemini 3.1 Pro (Preview)</option>
+                        <option value="gemini-2.5-flash-lite">Gemini 2.5 Flash Lite</option>
                     </select>
                 </div>
             </div>
 
             <div class="mt-6 flex justify-end">
-                <button onclick="saveAndCloseSettings()" class="bg-indigo-600 hover:bg-indigo-500 text-white font-semibold text-xs py-2 px-4 rounded-lg transition shadow-lg shadow-indigo-600/15">
+                <button onclick="saveAndCloseSettings()" class="bg-primary text-on-primary font-semibold text-xs py-2 px-4 rounded-full hover:bg-primary/90 transition shadow-lg shadow-primary/20">
                     Save configurations
                 </button>
             </div>
         </div>
     </div>
 
-    <!-- App Footer -->
-    <footer class="border-t border-slate-900 bg-slate-950 py-4 text-center">
-        <p class="text-xs text-slate-500 flex items-center justify-center gap-1">
-            Aligned with SpeechSTAR & Google Gen AI Core <i data-lucide="sparkles" class="w-3.5 h-3.5 text-indigo-500"></i>
-        </p>
-    </footer>
+    <!-- Help / Articulatory Map Guide Modal -->
+    <div id="articulator-info-modal" class="fixed inset-0 bg-background/90 z-[60] flex items-center justify-center p-4 backdrop-blur-md hidden">
+        <div class="glass-panel max-w-lg w-full rounded-2xl p-8 shadow-2xl relative">
+            <button onclick="toggleArticulatorInfoModal()" class="absolute top-6 right-6 text-on-surface-variant hover:text-primary transition">
+                <span class="material-symbols-outlined">close</span>
+            </button>
+            
+            <div class="flex items-center space-x-4 mb-8">
+                <div class="bg-primary/10 p-3 rounded-xl border border-primary/20">
+                    <span class="material-symbols-outlined text-primary">map</span>
+                </div>
+                <div>
+                    <h3 class="text-xl font-bold text-primary font-display">Understanding the Map</h3>
+                    <p class="text-sm text-on-surface-variant">A side-view (sagittal) cross-section guide</p>
+                </div>
+            </div>
 
+            <div class="space-y-5">
+                <div class="flex items-start gap-4 p-3 rounded-xl bg-surface-container-low border border-outline-variant">
+                    <div class="w-8 h-8 rounded-lg bg-primary/20 border border-primary/40 flex shrink-0 items-center justify-center font-bold text-primary text-xs">T</div>
+                    <div>
+                        <h4 class="text-sm font-bold text-on-surface mb-0.5">The Purple Shape (Tongue)</h4>
+                        <p class="text-xs text-on-surface-variant">Your most active articulator. Watch it rise to touch the roof (Palate), pull back to the Velum, or protrude for Dental sounds.</p>
+                    </div>
+                </div>
+
+                <div class="flex items-start gap-4 p-3 rounded-xl bg-surface-container-low border border-outline-variant">
+                    <div class="w-8 h-8 rounded-lg bg-white/20 border border-white/40 flex shrink-0 items-center justify-center font-bold text-on-surface text-xs">W</div>
+                    <div>
+                        <h4 class="text-sm font-bold text-on-surface mb-0.5">White Rectangles (Teeth)</h4>
+                        <p class="text-xs text-on-surface-variant">Fixed reference points. Helpful for anchoring the tongue tip or measuring jaw gap.</p>
+                    </div>
+                </div>
+
+                <div class="flex items-start gap-4 p-3 rounded-xl bg-surface-container-low border border-outline-variant">
+                    <div class="w-8 h-8 rounded-lg bg-secondary/20 border border-secondary/40 flex shrink-0 items-center justify-center font-bold text-secondary text-xs">L</div>
+                    <div>
+                        <h4 class="text-sm font-bold text-on-surface mb-0.5">Red Curves (Lips)</h4>
+                        <p class="text-xs text-on-surface-variant">Vital for Bilabial (P, B, M) and Labiodental (F, V) sounds. They animate to show closure or rounding.</p>
+                    </div>
+                </div>
+
+                <div class="flex items-start gap-4 p-3 rounded-xl bg-surface-container-low border border-outline-variant">
+                    <div class="w-8 h-8 rounded-lg bg-primary/20 border border-primary/40 flex shrink-0 items-center justify-center font-bold text-primary text-xs italic">A</div>
+                    <div>
+                        <h4 class="text-sm font-bold text-on-surface mb-0.5">Dashed Line (Airflow)</h4>
+                        <p class="text-xs text-on-surface-variant">Visualizes breath movement. A solid blockage means a 'Stop' sound; continuous flow through a gap means a 'Fricative'.</p>
+                    </div>
+                </div>
+            </div>
+
+            <button onclick="toggleArticulatorInfoModal()" class="w-full mt-8 py-3 bg-primary text-on-primary font-bold rounded-full hover:bg-primary/90 transition shadow-lg shadow-primary/20">
+                Got it, let's practice
+            </button>
+        </div>
+    </div>
+
+    <!-- JavaScript Logic -->
     <script>
         let mediaRecorder;
         let audioChunks = [];
@@ -483,8 +554,16 @@
         let articulatorCanvas;
         let articulatorCtx;
 
+        function checkUrlParameters() {
+            const urlParams = new URLSearchParams(window.location.search);
+            const apiKey = urlParams.get('key') || urlParams.get('apiKey');
+            if (apiKey) {
+                localStorage.setItem('coach_api_key', apiKey);
+            }
+        }
+
         window.addEventListener('DOMContentLoaded', () => {
-            lucide.createIcons();
+            checkUrlParameters();
             loadSettings();
             loadPracticeHistory();
             initArticulatorCanvas();
@@ -494,15 +573,7 @@
         function usePreset() {
             const presetSelector = document.getElementById('preset-selector');
             const targetSentenceInput = document.getElementById('target-sentence');
-            const customSentenceContainer = document.getElementById('custom-sentence-container');
-
-            if (presetSelector.value === 'custom') {
-                targetSentenceInput.value = '';
-                customSentenceContainer.classList.remove('hidden');
-            } else {
-                targetSentenceInput.value = presetSelector.value;
-                customSentenceContainer.classList.add('hidden');
-            }
+            targetSentenceInput.value = presetSelector.value === 'custom' ? '' : presetSelector.value;
         }
 
         // --- Audio Visualizer Setup & Loop ---
@@ -524,7 +595,7 @@
                 animationFrameId = requestAnimationFrame(draw);
                 analyserNode.getByteFrequencyData(dataArray);
 
-                canvasCtx.fillStyle = 'rgba(2, 6, 23, 0.2)'; 
+                canvasCtx.fillStyle = 'rgba(15, 18, 27, 0.2)'; // Match surface background
                 canvasCtx.fillRect(0, 0, canvas.width, canvas.height);
 
                 const barWidth = (canvas.width / bufferLength) * 2.5;
@@ -533,11 +604,12 @@
 
                 for (let i = 0; i < bufferLength; i++) {
                     barHeight = dataArray[i] / 1.5;
-                    const r = 99 + (barHeight * 0.5);
-                    const g = 102 + (barHeight * 0.2);
-                    const b = 241 + (barHeight * 0.1);
+                    // Interpolate between primary (#d0bcff) and secondary (#4edea3)
+                    const r = interpolate(208, 78, barHeight/255);
+                    const g = interpolate(188, 222, barHeight/255);
+                    const b = interpolate(255, 163, barHeight/255);
 
-                    canvasCtx.fillStyle = `rgb(${r}, ${g}, ${b})`;
+                    canvasCtx.fillStyle = `rgb(${Math.round(r)}, ${Math.round(g)}, ${Math.round(b)})`;
                     canvasCtx.fillRect(x, canvas.height - barHeight, barWidth - 1, barHeight);
                     x += barWidth + 1;
                 }
@@ -576,7 +648,6 @@
                     mediaRecorder.onstop = async () => {
                         lastAudioBlob = new Blob(audioChunks, { type: mimeType });
                         document.getElementById('audio-playback').src = URL.createObjectURL(lastAudioBlob);
-                        document.getElementById('audio-player-container').classList.remove('hidden');
                         document.getElementById('play-recorded-btn').removeAttribute('disabled');
                         const base64Audio = await blobToBase64(lastAudioBlob);
                         await triggerPronunciationCoach(base64Audio, mimeType);
@@ -595,27 +666,34 @@
 
         function setButtonState(state) {
             const btn = document.getElementById('record-btn');
-            const icon = document.getElementById('record-btn-icon');
-            const text = document.getElementById('record-btn-text');
+            const icon = btn.querySelector('.material-symbols-outlined');
+            const statusText = document.getElementById('recording-status-text');
 
             if (state === 'recording') {
-                btn.className = "flex-1 py-3 px-5 rounded-xl font-semibold flex items-center justify-center space-x-2 transition bg-red-600 hover:bg-red-500 text-white shadow-lg shadow-red-600/25 pulse-red";
-                icon.setAttribute('data-lucide', 'square');
-                text.textContent = "Stop Recording";
+                btn.className = "glowing-record w-24 h-24 rounded-full bg-error flex items-center justify-center transition-all group active:scale-95";
+                icon.textContent = "stop";
+                icon.className = "material-symbols-outlined text-background text-4xl group-hover:scale-110 transition-transform";
+                statusText.textContent = "Recording Now...";
+                document.getElementById('signal-status-label').textContent = "LIVE FEED";
+                document.getElementById('signal-status-label').className = "font-label-sm text-label-sm text-error uppercase tracking-[0.2em] mb-2";
+                btn.disabled = false;
             } else if (state === 'processing') {
-                btn.className = "flex-1 py-3 px-5 rounded-xl font-semibold flex items-center justify-center space-x-2 transition bg-slate-800 text-slate-500 cursor-not-allowed";
-                icon.setAttribute('data-lucide', 'loader-2');
-                icon.classList.add('animate-spin');
-                text.textContent = "Analyzing...";
+                btn.className = "w-24 h-24 rounded-full bg-surface-container-high flex items-center justify-center transition-all cursor-not-allowed";
+                icon.textContent = "progress_activity";
+                icon.className = "material-symbols-outlined text-on-surface-variant/40 text-4xl animate-spin";
+                statusText.textContent = "Analyzing...";
+                document.getElementById('signal-status-label').textContent = "AI ANALYSIS";
+                document.getElementById('signal-status-label').className = "font-label-sm text-label-sm text-primary uppercase tracking-[0.2em] mb-2";
                 btn.disabled = true;
-            } else {
-                btn.className = "flex-1 py-3 px-5 rounded-xl font-semibold flex items-center justify-center space-x-2 transition bg-indigo-600 hover:bg-indigo-500 text-white shadow-lg shadow-indigo-600/25";
-                icon.setAttribute('data-lucide', 'play');
-                icon.classList.remove('animate-spin');
-                text.textContent = "Start Recording";
+            } else { // ready / idle
+                btn.className = "glowing-record w-24 h-24 rounded-full bg-primary-container flex items-center justify-center transition-all group active:scale-95";
+                icon.textContent = "mic";
+                icon.className = "material-symbols-outlined text-on-primary-container text-4xl group-hover:scale-110 transition-transform";
+                statusText.textContent = "Ready to Record";
+                document.getElementById('signal-status-label').textContent = "Signal Status";
+                document.getElementById('signal-status-label').className = "font-label-sm text-label-sm text-secondary uppercase tracking-[0.2em] mb-2";
                 btn.disabled = false;
             }
-            lucide.createIcons();
         }
 
         function startTimer() {
@@ -641,8 +719,7 @@
             });
         }
 
-        // --- Improved Articulatory Map Drawing ---
-        // --- Articulatory Map Constants & Helpers ---
+        // --- Articulatory Map Constants & Drawing ---
         const TONGUE_SHAPES = {
             'neutral': {
                 cp1: {x: 145, y: 110}, cp2: {x: 120, y: 100}, tip: {x: 90, y: 105},
@@ -700,180 +777,164 @@
             };
         }
 
+        let anatomyImage;
+        let isAnatomyImageLoaded = false;
+
         function initArticulatorCanvas() {
             articulatorCanvas = document.getElementById('articulator-canvas');
             articulatorCtx = articulatorCanvas.getContext('2d');
-            articulatorCanvas.width = 224;
-            articulatorCanvas.height = 224;
-            // Draw initial neutral state
-            drawMouthCrossSectionDynamic(TONGUE_SHAPES['neutral'], LIP_GAPS['neutral'], 'neutral', 0, true);
+            articulatorCanvas.width = 512;
+            articulatorCanvas.height = 279;
+            
+            anatomyImage = new Image();
+            anatomyImage.src = 'assets/anatomy_bg.jpg';
+            anatomyImage.onload = () => {
+                isAnatomyImageLoaded = true;
+                drawMouthCrossSectionDynamic('neutral', 'neutral', 0, true, 1);
+            };
         }
 
-        function drawMouthCrossSectionDynamic(tongueShape, lipGap, targetType, targetPhase, isCorrectState) {
+        function getArticulatorCoords(type) {
+            if (type === 'tongue-tip') return { x: 190, y: 90, label: "Alveolar Ridge" };
+            if (type === 'lips') return { x: 170, y: 100, label: "Lips" };
+            if (type === 'tongue-back') return { x: 240, y: 95, label: "Velum" };
+            if (type === 'dental') return { x: 180, y: 100, label: "Teeth" };
+            if (type === 'palatal') return { x: 215, y: 85, label: "Hard Palate" };
+            return null;
+        }
+
+        function drawPulseDot(ctx, x, y, label, state, phase) {
+            let pulseRadius = 6 + Math.sin(phase * 2.5) * 3.5;
+            ctx.beginPath();
+            ctx.arc(x, y, pulseRadius, 0, 2 * Math.PI);
+            
+            ctx.shadowBlur = 10;
+            ctx.shadowColor = state === 'correct' ? '#4edea3' : '#ffb4ab';
+            
+            if (state === 'correct') {
+                ctx.fillStyle = 'rgba(78, 222, 163, 0.25)';
+                ctx.strokeStyle = 'rgba(78, 222, 163, 0.7)';
+            } else {
+                ctx.fillStyle = 'rgba(255, 180, 171, 0.25)';
+                ctx.strokeStyle = 'rgba(255, 180, 171, 0.7)';
+            }
+            ctx.lineWidth = 1.5;
+            ctx.fill();
+            ctx.stroke();
+            
+            ctx.beginPath();
+            ctx.arc(x, y, 4, 0, 2 * Math.PI);
+            ctx.fillStyle = state === 'correct' ? '#4edea3' : '#ffb4ab';
+            ctx.fill();
+            
+            ctx.shadowBlur = 0;
+
+            ctx.font = "bold 9px Geist, sans-serif";
+            ctx.fillStyle = state === 'correct' ? '#6ffbbe' : '#ffb4ab';
+            ctx.textAlign = "left";
+            ctx.fillText(label.toUpperCase(), x + 10, y + 3);
+        }
+
+        function drawStaticGuideDot(ctx, x, y, label) {
+            ctx.beginPath();
+            ctx.arc(x, y, 6, 0, 2 * Math.PI);
+            ctx.strokeStyle = 'rgba(231, 224, 237, 0.4)'; 
+            ctx.lineWidth = 1.5;
+            ctx.setLineDash([2, 2]);
+            ctx.stroke();
+            ctx.setLineDash([]);
+            
+            ctx.beginPath();
+            ctx.arc(x, y, 2.5, 0, 2 * Math.PI);
+            ctx.fillStyle = 'rgba(231, 224, 237, 0.4)';
+            ctx.fill();
+
+            ctx.font = "bold 9px Geist, sans-serif";
+            ctx.fillStyle = 'rgba(231, 224, 237, 0.4)';
+            ctx.textAlign = "left";
+            ctx.fillText(label.toUpperCase(), x + 10, y + 3);
+        }
+
+        function drawTransitionPath(ctx, startCoords, endCoords, t) {
+            ctx.beginPath();
+            ctx.moveTo(startCoords.x, startCoords.y);
+            
+            const midX = (startCoords.x + endCoords.x) / 2;
+            const midY = (startCoords.y + endCoords.y) / 2;
+            const cpX = midX;
+            const cpY = midY - 15; 
+            
+            ctx.quadraticCurveTo(cpX, cpY, endCoords.x, endCoords.y);
+            ctx.strokeStyle = 'rgba(0, 240, 255, 0.5)'; 
+            ctx.lineWidth = 2;
+            ctx.setLineDash([4, 4]);
+            ctx.stroke();
+            ctx.setLineDash([]);
+
+            const mt = 1 - t;
+            const px = mt * mt * startCoords.x + 2 * mt * t * cpX + t * t * endCoords.x;
+            const py = mt * mt * startCoords.y + 2 * mt * t * cpY + t * t * endCoords.y;
+
+            const r = Math.round(255 - 255 * t);
+            const g = Math.round(59 + (230 - 59) * t);
+            const b = Math.round(48 + (118 - 48) * t);
+            const colorStr = `rgb(${r}, ${g}, ${b})`;
+
+            ctx.beginPath();
+            ctx.arc(px, py, 6, 0, 2 * Math.PI);
+            ctx.fillStyle = colorStr;
+            ctx.shadowBlur = 12;
+            ctx.shadowColor = colorStr;
+            ctx.fill();
+            ctx.shadowBlur = 0; 
+
+            ctx.beginPath();
+            ctx.arc(px, py, 2.5, 0, 2 * Math.PI);
+            ctx.fillStyle = '#ffffff';
+            ctx.fill();
+        }
+
+        function drawMouthCrossSectionDynamic(incorrectType, correctType, targetPhase, isCorrectState, t) {
             const ctx = articulatorCtx;
             const w = articulatorCanvas.width;
             const h = articulatorCanvas.height;
             ctx.clearRect(0, 0, w, h);
 
-            // Enable anti-aliasing and clean line joins
-            ctx.lineCap = 'round';
-            ctx.lineJoin = 'round';
+            if (isAnatomyImageLoaded && anatomyImage) {
+                ctx.drawImage(anatomyImage, 0, 0, w, h);
+            } else {
+                ctx.fillStyle = '#15121b';
+                ctx.fillRect(0, 0, w, h);
+            }
 
-            // --- 1. Static Upper Face Silhouette ---
-            ctx.strokeStyle = '#475569'; // Dark slate for face profile
-            ctx.lineWidth = 3;
-            ctx.beginPath();
-            ctx.moveTo(60, 10); // Forehead
-            ctx.quadraticCurveTo(65, 25, 60, 35); // Nose bridge
-            ctx.lineTo(40, 50); // Nose tip
-            ctx.lineTo(55, 62); // Philtrum
-            ctx.quadraticCurveTo(48, 68, 50, 72); // Upper lip outer
-            ctx.quadraticCurveTo(56, 75, 58, 78); // Upper lip inner (mouth corner)
-            ctx.stroke();
+            const correctCoords = getArticulatorCoords(correctType);
+            const incorrectCoords = getArticulatorCoords(incorrectType);
 
-            // --- 2. Static Roof of Mouth & Throat Back ---
-            ctx.strokeStyle = '#64748b'; // Medium slate for internal tract
-            ctx.lineWidth = 2.5;
-            ctx.beginPath();
-            ctx.moveTo(58, 78); // Starts at Upper Lip Inner
-            ctx.quadraticCurveTo(75, 76, 88, 72); // Alveolar Ridge
-            ctx.quadraticCurveTo(120, 60, 150, 65); // Hard/Soft Palate (Velum)
-            ctx.quadraticCurveTo(165, 68, 170, 80); // Uvula
-            ctx.quadraticCurveTo(180, 95, 180, 120); // Pharynx Back Wall
-            ctx.lineTo(180, 200); // Down to esophagus
-            ctx.stroke();
-
-            // --- 3. Dynamic Lower Face & Floor of Mouth (Moves with jaw/lipGap) ---
-            let lowerLipInnerY = 78 + lipGap;
-            let chinY = 150 + lipGap * 1.2;
-            let chinX = 70 - lipGap * 0.3; // Shifts back slightly as jaw drops
-            let neckX = 110;
-            let neckY = 200;
-
-            // Lower Face Silhouette (Lower Lip to Chin to Neck)
-            ctx.strokeStyle = '#475569';
-            ctx.lineWidth = 3;
-            ctx.beginPath();
-            ctx.moveTo(58, lowerLipInnerY); // Lower lip inner
-            ctx.quadraticCurveTo(46, lowerLipInnerY + 4, 48, lowerLipInnerY + 12); // Lower lip outer
-            ctx.quadraticCurveTo(chinX - 12, chinY - 15, chinX, chinY); // Chin
-            ctx.lineTo(neckX, neckY); // Neck
-            ctx.stroke();
-
-            // Floor of Mouth (starts from Lower Lip Inner, moves with jaw)
-            ctx.strokeStyle = '#64748b';
-            ctx.lineWidth = 2.5;
-            ctx.beginPath();
-            ctx.moveTo(58, lowerLipInnerY);
-            ctx.quadraticCurveTo(75, lowerLipInnerY + 6, 88, lowerLipInnerY + 10); // Behind lower lip
-            ctx.quadraticCurveTo(110, 145 + lipGap * 0.5, 140, 200); // Floor/Front of throat
-            ctx.stroke();
-
-            // --- 4. Draw Teeth (Rounded shapes, lower moves with jaw) ---
-            ctx.fillStyle = '#f1f5f9'; // Clean white
-            // Upper Tooth (fixed at Alveolar Ridge)
-            ctx.beginPath();
-            ctx.roundRect(84, 72, 4, 8, [0, 0, 1, 1]); // Rounded bottom
-            ctx.fill();
-            
-            // Lower Tooth (moves with lower jaw)
-            ctx.beginPath();
-            ctx.roundRect(80, lowerLipInnerY + 2, 4, 8, [1, 1, 0, 0]); // Rounded top
-            ctx.fill();
-
-            // --- 5. Draw Tongue (Fleshy organic shape & color) ---
-            ctx.strokeStyle = '#e11d48'; // Rose-600 border
-            ctx.fillStyle = 'rgba(244, 63, 94, 0.25)'; // Rose-500 fill with opacity
-            ctx.lineWidth = 3.5;
-            
             if (isCorrectState) {
-                ctx.shadowBlur = 8;
-                ctx.shadowColor = 'rgba(244, 63, 94, 0.5)';
-            }
-
-            ctx.beginPath();
-            ctx.moveTo(150, 150); // Tongue root (fixed)
-            ctx.bezierCurveTo(
-                tongueShape.cp1.x, tongueShape.cp1.y,
-                tongueShape.cp2.x, tongueShape.cp2.y,
-                tongueShape.tip.x, tongueShape.tip.y
-            );
-            ctx.quadraticCurveTo(
-                tongueShape.cp3.x, tongueShape.cp3.y,
-                tongueShape.bottom.x, tongueShape.bottom.y
-            );
-            ctx.lineTo(150, 150);
-            ctx.closePath();
-            ctx.fill();
-            ctx.stroke();
-            ctx.shadowBlur = 0; // Reset shadow
-
-            // --- 6. Draw Target Zone (Pulsing feedback) ---
-            let targetX = 0, targetY = 0, targetLabel = "";
-            if (targetType === 'tongue-tip') { targetX = 88; targetY = 72; targetLabel = "Alveolar Ridge"; }
-            else if (targetType === 'lips') { targetX = 52; targetY = 78 + lipGap/2; targetLabel = "Lips"; }
-            else if (targetType === 'tongue-back') { targetX = 150; targetY = 65; targetLabel = "Velum"; }
-            else if (targetType === 'dental') { targetX = 82; targetY = 82; targetLabel = "Teeth Gap"; }
-            else if (targetType === 'palatal') { targetX = 120; targetY = 60; targetLabel = "Hard Palate"; }
-
-            if (targetX > 0) {
-                let pulseRadius = 5 + Math.sin(targetPhase * 2.5) * 2.5;
-                ctx.beginPath();
-                ctx.arc(targetX, targetY, pulseRadius, 0, 2 * Math.PI);
-                if (isCorrectState) {
-                    ctx.fillStyle = 'rgba(16, 185, 129, 0.2)';
-                    ctx.strokeStyle = 'rgba(16, 185, 129, 0.6)';
-                    ctx.lineWidth = 1.5;
-                    ctx.stroke();
-                } else {
-                    ctx.fillStyle = 'rgba(239, 68, 68, 0.15)';
-                    ctx.strokeStyle = 'rgba(239, 68, 68, 0.5)';
-                    ctx.lineWidth = 1.5;
-                    ctx.stroke();
+                if (correctCoords) {
+                    drawPulseDot(ctx, correctCoords.x, correctCoords.y, correctCoords.label, 'correct', targetPhase);
                 }
-                ctx.fill();
-
-                ctx.beginPath();
-                ctx.arc(targetX, targetY, 3.5, 0, 2 * Math.PI);
-                ctx.fillStyle = isCorrectState ? '#10b981' : '#ef4444';
-                ctx.fill();
-
-                ctx.font = "bold 8px Inter, sans-serif";
-                ctx.fillStyle = isCorrectState ? '#34d399' : '#f87171';
-                ctx.fillText(targetLabel.toUpperCase(), targetX + 8, targetY + 3);
+            } else {
+                if (correctCoords) {
+                    drawStaticGuideDot(ctx, correctCoords.x, correctCoords.y, correctCoords.label);
+                }
+                if (incorrectCoords && incorrectType !== 'neutral' && incorrectType !== correctType) {
+                    if (correctCoords) {
+                        drawTransitionPath(ctx, incorrectCoords, correctCoords, t);
+                    }
+                    drawPulseDot(ctx, incorrectCoords.x, incorrectCoords.y, incorrectCoords.label, 'incorrect', targetPhase);
+                }
             }
-
-            // --- 7. Draw Airflow (Sky blue breath stream) ---
-            ctx.strokeStyle = 'rgba(56, 189, 248, 0.5)'; // Sky-400
-            ctx.lineWidth = 3;
-            ctx.setLineDash([6, 6]);
-            ctx.lineDashOffset = -targetPhase * 12;
-            ctx.beginPath();
-            ctx.moveTo(170, 110); // Throat
-            ctx.quadraticCurveTo(120, 95, tongueShape.tip.x - 8, tongueShape.tip.y - 5); // Over tongue
-            ctx.lineTo(45, 78 + lipGap/2); // Out of lips
-            ctx.stroke();
-            ctx.setLineDash([]);
-
-            // --- 8. Anatomical Labels ---
-            ctx.font = "bold 8px Inter, sans-serif";
-            ctx.fillStyle = "#64748b";
-            ctx.fillText("PALATE", 115, 50);
-            ctx.fillText("VELUM", 155, 55);
-            ctx.fillText("PHARYNX", 145, 180);
-            ctx.fillText("JAW", 80, 185);
         }
 
         let animationId;
         let animationStartTime;
-        const ANIMATION_DURATION = 1800; // 1.8 seconds transition
-        const HOLD_DURATION = 1200;      // 1.2 seconds hold
+        const ANIMATION_DURATION = 1800; 
+        const HOLD_DURATION = 1200;      
         const TOTAL_CYCLE = ANIMATION_DURATION + HOLD_DURATION;
 
         function startCorrectionAnimation(incorrectType, correctType) {
-            if (animationId) {
-                cancelAnimationFrame(animationId);
-            }
+            if (animationId) cancelAnimationFrame(animationId);
 
             const badge = document.getElementById('current-articulator-badge');
             if (incorrectType === 'neutral') {
@@ -881,12 +942,6 @@
             } else {
                 badge.textContent = `${incorrectType.toUpperCase().replace('-', ' ')} ➔ ${correctType.toUpperCase().replace('-', ' ')}`;
             }
-
-            const startShape = TONGUE_SHAPES[incorrectType] || TONGUE_SHAPES['neutral'];
-            const endShape = TONGUE_SHAPES[correctType] || TONGUE_SHAPES['neutral'];
-
-            const startGap = LIP_GAPS[incorrectType] !== undefined ? LIP_GAPS[incorrectType] : 8;
-            const endGap = LIP_GAPS[correctType] !== undefined ? LIP_GAPS[correctType] : 8;
 
             animationStartTime = performance.now();
 
@@ -897,33 +952,29 @@
 
                 if (elapsed < ANIMATION_DURATION) {
                     t = elapsed / ANIMATION_DURATION;
-                    // Ease in out quad
                     t = t < 0.5 ? 2 * t * t : 1 - Math.pow(-2 * t + 2, 2) / 2;
                 } else {
                     t = 1;
                     isCorrect = true;
                 }
 
-                const currentShape = interpolateShape(startShape, endShape, t);
-                const currentGap = interpolate(startGap, endGap, t);
                 const phase = now / 200;
 
-                drawMouthCrossSectionDynamic(currentShape, currentGap, correctType, phase, isCorrect);
+                drawMouthCrossSectionDynamic(incorrectType, correctType, phase, isCorrect, t);
 
                 const desc = document.getElementById('interactive-mechanics-desc');
                 if (incorrectType === 'neutral') {
-                    desc.innerHTML = `<span class="text-indigo-400 font-bold">Target Position:</span> ${getArticulatorDescription(correctType)}`;
+                    desc.innerHTML = `<span class="text-primary font-bold">Target Position:</span> ${getArticulatorDescription(correctType)}`;
                 } else {
                     if (isCorrect) {
-                        desc.innerHTML = `<span class="text-emerald-400 font-bold">Correct Position:</span> Move to ${getArticulatorDescription(correctType)}`;
+                        desc.innerHTML = `<span class="text-secondary font-bold">Correct Position:</span> Move to ${getArticulatorDescription(correctType)}`;
                     } else {
-                        desc.innerHTML = `<span class="text-red-400 font-bold">Incorrect Position:</span> Avoid ${getArticulatorDescription(incorrectType)}`;
+                        desc.innerHTML = `<span class="text-error font-bold">Incorrect Position:</span> Avoid ${getArticulatorDescription(incorrectType)}`;
                     }
                 }
 
                 animationId = requestAnimationFrame(update);
             }
-
             animationId = requestAnimationFrame(update);
         }
 
@@ -946,7 +997,6 @@
                 incorrect = incorrectOrCorrect;
                 correct = maybeCorrect;
             }
-
             startCorrectionAnimation(incorrect, correct);
         }
 
@@ -959,6 +1009,15 @@
             const apiKey = document.getElementById('api-key-input').value.trim() || "";
             const selectedModel = document.getElementById('model-selector').value;
             const endpoint = `https://generativelanguage.googleapis.com/v1beta/models/${selectedModel}:generateContent?key=${apiKey}`;
+
+            // Update badge status to Analyzing
+            const statusBadge = document.getElementById('gemini-status-badge');
+            const statusText = document.getElementById('gemini-status-text');
+            const statusDot = statusBadge.querySelector('span');
+            statusBadge.className = "flex items-center gap-2 px-4 py-1.5 rounded-full bg-primary/10 border border-primary/20 analyzing-badge";
+            statusText.className = "font-label-sm text-label-sm text-primary uppercase tracking-widest";
+            statusText.textContent = "Analyzing";
+            statusDot.className = "w-2 h-2 rounded-full bg-primary animate-pulse";
 
             const systemInstructions = `
                 Analyze pronunciation using SpeechSTAR framework. Identify place (Lips, Tongue Tip, Front, Back) and manner.
@@ -996,48 +1055,73 @@
                 if (jsonText) {
                     const parsedResult = JSON.parse(jsonText.replace(/```json|```/g, ""));
                     renderDiagnostics(parsedResult);
+                    savePracticeRunToHistory(parsedResult.score, parsedResult.intended_sentence);
                 }
-            } catch (err) { loadSampleDiagnostic(); } 
-            finally { setButtonState('ready'); document.getElementById('loading-state').classList.add('hidden'); }
+            } catch (err) { 
+                loadSampleDiagnostic(); 
+            } 
+            finally { 
+                setButtonState('ready'); 
+                document.getElementById('loading-state').classList.add('hidden'); 
+                loadSettings(); // Restores correct badge state based on key presence
+            }
         }
 
         function renderDiagnostics(data) {
+            document.getElementById('blank-state').classList.add('hidden');
+            document.getElementById('loading-state').classList.add('hidden');
             document.getElementById('results-dashboard').classList.remove('hidden');
-            document.getElementById('score-text').textContent = data.score;
-            document.getElementById('score-circle').style.strokeDashoffset = (2 * Math.PI * 54) * (1 - data.score / 100);
-            document.getElementById('heard-sentence').innerHTML = `"${data.transcription}"`;
-            document.getElementById('corrected-sentence').innerHTML = `"${data.intended_sentence}"`;
+            
+            // Score and Ring
+            document.getElementById('score-text').textContent = data.score + "%";
+            document.getElementById('score-circle').style.strokeDashoffset = (2 * Math.PI * 40) * (1 - data.score / 100);
+            document.getElementById('accuracy-feedback').textContent = `Speech matched ${data.score}% of the pronunciation targets.`;
+
+            // Transcription
+            document.getElementById('heard-sentence').textContent = `"${data.transcription}"`;
+            document.getElementById('corrected-sentence').textContent = `"${data.intended_sentence}"`;
+
+            // Global guides
             document.getElementById('tongue-guide').textContent = data.tongue_guide;
             document.getElementById('jaw-guide').textContent = data.jaw_guide;
             document.getElementById('global-muscle-guide').textContent = data.global_muscle_guide;
 
+            // Pitfalls list
             const container = document.getElementById('words-analysis-container');
             container.innerHTML = '';
-            (data.mispronounced_words || []).forEach((item, index) => {
-                const div = document.createElement('div');
-                div.className = "pt-4 flex flex-col space-y-3 cursor-pointer hover:bg-slate-900/30 p-2 rounded-lg transition";
-                div.onclick = () => animateArticulators(item.incorrect_articulator || 'neutral', item.correct_articulator || 'tongue-tip');
-                div.innerHTML = `
-                    <div class="flex items-center justify-between gap-2">
-                        <div class="flex items-center gap-2">
-                            <span class="text-xs bg-red-500/10 border border-red-500/20 text-red-400 px-2 py-0.5 rounded font-bold">"${item.how_heard}"</span>
-                            <span class="text-[10px] text-slate-500 font-bold uppercase tracking-widest">Expected</span>
-                            <span class="text-xs bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 px-2 py-0.5 rounded font-bold">"${item.word}"</span>
-                        </div>
-                        <a href="${item.speechstar_url || 'https://speechstar.ac.uk/speech-sound-animations/'}" target="_blank" onclick="event.stopPropagation();" class="text-[10px] bg-indigo-600 hover:bg-indigo-500 text-white px-2 py-1 rounded flex items-center gap-1 transition">
-                            <i data-lucide="video" class="w-3 h-3"></i> View STAR Animation
-                        </a>
-                    </div>
-                    <p class="text-xs text-slate-400"><span class="text-indigo-400 font-bold">Pattern:</span> ${item.problem}</p>
-                    <div class="text-xs text-slate-200 bg-slate-900 border border-slate-800 p-2.5 rounded-lg">
-                        <span class="text-violet-400 font-bold uppercase tracking-tighter text-[10px] block mb-1">Muscle Practice:</span> ${item.placement_guide}
+            
+            if (!data.mispronounced_words || data.mispronounced_words.length === 0) {
+                container.innerHTML = `
+                    <div class="p-4 bg-secondary/10 rounded-xl border border-secondary/20 text-center text-secondary text-xs">
+                         🎉 Perfect pronunciation detected! No pitfalls found.
                     </div>
                 `;
-                container.appendChild(div);
-                if (index === 0) animateArticulators(item.incorrect_articulator || 'neutral', item.correct_articulator || 'tongue-tip');
-            });
-            lucide.createIcons();
-            document.getElementById('results-dashboard').scrollIntoView({ behavior: 'smooth' });
+            } else {
+                data.mispronounced_words.forEach((item, index) => {
+                    const div = document.createElement('div');
+                    div.className = "flex items-center gap-4 bg-error/10 p-3 rounded-xl border border-error/20 cursor-pointer hover:bg-error/20 transition-all";
+                    div.onclick = () => animateArticulators(item.incorrect_articulator || 'neutral', item.correct_articulator || 'tongue-tip');
+                    div.innerHTML = `
+                        <div class="text-center px-3 py-1 bg-surface-container-low rounded-lg shrink-0 border border-outline-variant min-w-[70px]">
+                            <p class="text-[9px] text-on-surface-variant/60 uppercase font-bold">Expected</p>
+                            <p class="font-body-md font-bold text-secondary text-xs">${item.word}</p>
+                            <p class="text-[9px] text-on-surface-variant/60 uppercase font-bold mt-1">Heard</p>
+                            <p class="font-body-md font-bold text-error text-xs">${item.how_heard}</p>
+                        </div>
+                        <div class="flex-1 min-w-0">
+                            <p class="font-label-md text-sm text-on-surface font-bold truncate">${item.word}</p>
+                            <p class="text-xs text-on-surface-variant mt-1 line-clamp-2">${item.placement_guide}</p>
+                            <div class="flex gap-2 mt-2">
+                                <a class="text-primary text-[10px] font-bold hover:underline flex items-center gap-0.5" href="${item.speechstar_url || 'https://speechstar.ac.uk/'}" target="_blank" onclick="event.stopPropagation();">
+                                    <span class="material-symbols-outlined text-xs">open_in_new</span> View STAR
+                                </a>
+                            </div>
+                        </div>
+                    `;
+                    container.appendChild(div);
+                    if (index === 0) animateArticulators(item.incorrect_articulator || 'neutral', item.correct_articulator || 'tongue-tip');
+                });
+            }
         }
 
         function loadSampleDiagnostic() {
@@ -1050,31 +1134,100 @@
                     "placement_guide": "Start with the tongue body raised (as if saying 'sh'), then consciously lower it and move the tongue tip forward to almost touch the alveolar ridge behind your upper teeth to produce a sharp 's' sound.",
                     "speechstar_url": "https://speechstar.ac.uk/speech-sound-animations/#location=34"
                 }],
-                "tongue_guide": "Move tongue tip forward and down from the palate to the alveolar ridge.", "jaw_guide": "Keep jaw relatively closed, teeth close but not touching.", "global_muscle_guide": "Release air continuously through a narrow channel at the front of the mouth."
+                "tongue_guide": "Move tongue tip forward and down from the palate to the alveolar ridge.", 
+                "jaw_guide": "Keep jaw relatively closed, teeth close but not touching.", 
+                "global_muscle_guide": "Release air continuously through a narrow channel at the front of the mouth."
             });
         }
 
         function speakCorrectSentence() {
-            const utterance = new SpeechSynthesisUtterance(document.getElementById('corrected-sentence').textContent.replace(/"/g, ''));
-            utterance.rate = 0.85; window.speechSynthesis.speak(utterance);
+            const text = document.getElementById('corrected-sentence').textContent.replace(/"/g, '');
+            if (!text || text === '...') return;
+            const utterance = new SpeechSynthesisUtterance(text);
+            utterance.rate = 0.85; 
+            window.speechSynthesis.speak(utterance);
         }
 
-        function loadPracticeHistory() { /* Basic history logic... */ }
-        function savePracticeRunToHistory(s, t) { /* Save logic... */ }
-        function clearHistory() { localStorage.removeItem('articulation_history'); location.reload(); }
+        // --- History Log ---
+        function loadPracticeHistory() {
+            const history = JSON.parse(localStorage.getItem('articulation_history') || '[]');
+            const container = document.getElementById('history-container');
+            container.innerHTML = '';
+            
+            if (history.length === 0) {
+                container.innerHTML = `<div class="text-xs text-on-surface-variant/40 text-center py-4">No recent practice runs.</div>`;
+                return;
+            }
+            
+            history.forEach(run => {
+                const div = document.createElement('div');
+                div.className = "flex justify-between items-center bg-surface-container-low p-2.5 rounded-xl border border-outline-variant text-xs cursor-pointer hover:bg-surface-variant/10 transition-all";
+                div.onclick = () => renderDiagnostics(run.data);
+                div.innerHTML = `
+                    <div class="truncate pr-4 flex-1">
+                        <p class="font-bold text-on-surface truncate">${run.sentence}</p>
+                        <p class="text-[10px] text-on-surface-variant/50">${new Date(run.timestamp).toLocaleDateString()}</p>
+                    </div>
+                    <span class="font-display font-bold text-secondary text-sm">${run.score}%</span>
+                `;
+                container.appendChild(div);
+            });
+        }
+
+        function savePracticeRunToHistory(score, sentence) {
+            const history = JSON.parse(localStorage.getItem('articulation_history') || '[]');
+            const mockDiagnostic = {
+                score,
+                intended_sentence: sentence,
+                transcription: sentence, 
+                mispronounced_words: [],
+                tongue_guide: "Refer to live guidance.",
+                jaw_guide: "Refer to live guidance.",
+                global_muscle_guide: "Refer to live guidance."
+            };
+            history.unshift({ timestamp: Date.now(), score, sentence, data: mockDiagnostic });
+            localStorage.setItem('articulation_history', JSON.stringify(history.slice(0, 10))); 
+            loadPracticeHistory();
+        }
+
+        // --- Modals Toggles ---
         function toggleArticulatorInfoModal() { document.getElementById('articulator-info-modal').classList.toggle('hidden'); }
+        function toggleSettingsModal() { document.getElementById('settings-modal').classList.toggle('hidden'); }
+
+        // --- Configurations & Settings ---
         function loadSettings() {
             const apiKey = localStorage.getItem('coach_api_key') || '';
             const accent = localStorage.getItem('coach_accent') || 'General American (US)';
-            const model = localStorage.getItem('coach_model') || 'gemini-2.5-flash';
+            let model = localStorage.getItem('coach_model') || 'gemini-3.5-flash';
+            const invalidModels = ['gemini-2.5-flash', 'gemini-2.5-pro', 'gemini-1.5-flash', 'gemini-1.5-pro', 'gemini-2.0-flash', 'gemini-3-pro-preview'];
+            if (invalidModels.includes(model)) {
+                model = 'gemini-3.5-flash';
+                localStorage.setItem('coach_model', model);
+            }
 
             document.getElementById('api-key-input').value = apiKey;
             document.getElementById('native-accent').value = accent;
             document.getElementById('model-selector').value = model;
+
+            const statusBadge = document.getElementById('gemini-status-badge');
+            const statusText = document.getElementById('gemini-status-text');
+            const statusDot = statusBadge.querySelector('span');
+
+            if (apiKey) {
+                statusBadge.className = "flex items-center gap-2 px-4 py-1.5 rounded-full bg-emerald-500/10 border border-emerald-500/20";
+                statusText.className = "font-label-sm text-label-sm text-secondary uppercase tracking-widest";
+                text = "Gemini Ready";
+                statusText.textContent = text;
+                statusDot.className = "w-2 h-2 rounded-full bg-secondary animate-pulse";
+            } else {
+                statusBadge.className = "flex items-center gap-2 px-4 py-1.5 rounded-full bg-error/10 border border-error/20";
+                statusText.className = "font-label-sm text-label-sm text-error uppercase tracking-widest";
+                text = "Key Missing";
+                statusText.textContent = text;
+                statusDot.className = "w-2 h-2 rounded-full bg-error";
+            }
         }
 
-        function toggleSettingsModal() { document.getElementById('settings-modal').classList.toggle('hidden'); }
-        
         function saveAndCloseSettings() {
             const apiKey = document.getElementById('api-key-input').value.trim();
             const accent = document.getElementById('native-accent').value;
@@ -1085,13 +1238,13 @@
             localStorage.setItem('coach_model', model);
 
             toggleSettingsModal();
-            if (typeof showBannerNotification === 'function') {
-                showBannerNotification('Settings saved.');
-            } else {
-                alert('Settings saved.');
-            }
+            loadSettings();
+            showBannerNotification('Settings saved.');
         }
-        function showBannerNotification(m) { /* Notification... */ }
+
+        function showBannerNotification(message) {
+            alert(message);
+        }
     </script>
 </body>
 </html>
