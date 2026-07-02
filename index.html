@@ -539,6 +539,105 @@
 
     <!-- JavaScript Logic -->
     <script>
+        const SPEECHSTAR_MAP = {
+            "16": {"text": "pat", "video": "vl_bilabial_plosive.mp4"},
+            "7": {"text": "bat", "video": "vd_bilabial_plosive.mp4"},
+            "15": {"text": "tot", "video": "vl_alveolar_plosive.mp4"},
+            "5": {"text": "dot", "video": "vd_alveolar_plosive-new.mp4"},
+            "22": {"text": "cot", "video": "vl_velar_plosive.mp4"},
+            "13": {"text": "got", "video": "vd_velar_plosive.mp4"},
+            "6": {"text": "mop", "video": "vd_bilabial_nasal.mp4"},
+            "4": {"text": "nap", "video": "vd_alveolar_nasal.mp4"},
+            "12": {"text": "sing", "video": "vd_velar_nasal.mp4"},
+            "19": {"text": "fit", "video": "vl_labiodental_fricative.mp4"},
+            "9": {"text": "vat", "video": "vd_labiodental_fricative.mp4"},
+            "17": {"text": "think", "video": "vl_dental_fricative.mp4"},
+            "8": {"text": "though", "video": "vd_dental_fricative.mp4"},
+            "14": {"text": "sip", "video": "vl_alveolar_fricative.mp4"},
+            "2": {"text": "zip", "video": "vd_alveolar_fricative.mp4"},
+            "20": {"text": "ship", "video": "vl_postalveolar_fricative.mp4"},
+            "11": {"text": "vision", "video": "vd_postalveolar_fricative.mp4"},
+            "21": {"text": "loch", "video": "vl_velar_fricative.mp4"},
+            "24": {"text": "whale", "video": "vl_labial_velar_fricative.mp4"},
+            "18": {"text": "hen", "video": "vl_glottal_fricative.mp4"},
+            "25": {"text": "cheap", "video": "vl_postalveolar_affricate.mp4"},
+            "26": {"text": "jeep", "video": "vd_postalveolar_affricate.mp4"},
+            "1": {"text": "rap", "video": "vd_alveolar_approximant.mp4"},
+            "10": {"text": "yes", "video": "vd_palatal_approximant.mp4"},
+            "23": {"text": "was", "video": "vd_labial_velar_approximant.mp4"},
+            "3": {"text": "lip", "video": "vd_alveolar_lateral_approximant.mp4"},
+            "65": {"text": "Lip consonants", "video": "sg_lip-sounds-of-english.mp4"},
+            "109": {"text": "Tongue tip consonants", "video": "sg_tongue-tip-sounds-of-english.mp4"},
+            "108": {"text": "Tongue front consonants", "video": "sg_tongue-front-sounds-of-english.mp4"},
+            "107": {"text": "Tongue back consonants", "video": "sg_tongue-back-sounds-of-english.mp4"},
+            "30": {"text": "Burst of air consonants", "video": "sg_plosives-of-english-new.mp4"},
+            "28": {"text": "Fricative consonants", "video": "sg_fricatives-of-english-new.mp4"},
+            "31": {"text": "Burst of air with frication consonants", "video": "sg_affricates-of-english-new.mp4"},
+            "29": {"text": "Nasal consonants", "video": "sg_nasals-of-english.mp4"},
+            "27": {"text": "Vowel-like consonants", "video": "sg_approximants-of-english-new.mp4"},
+            "93": {"text": "f and s syllable onset", "video": "f_s_comparison_onset.mp4"},
+            "94": {"text": "f and s between vowels", "video": "f_s_comparison_intervocalic.mp4"},
+            "95": {"text": "v and z syllable onset", "video": "v_z_comparison_onset-new.mp4"},
+            "96": {"text": "v and z between vowels", "video": "v_z_comparison_intervocalic-new.mp4"},
+            "105": {"text": "k and t between vowels", "video": "k_t_comparison_intervocalic.mp4"},
+            "106": {"text": "k and t syllable onset", "video": "k_t_comparison_onset.mp4"},
+            "41": {"text": "d and g syllable onset", "video": "d_g_comparison_onset.mp4"},
+            "40": {"text": "d and g between vowels", "video": "d_g_comparison_intervocalic.mp4"},
+            "39": {"text": "n and ng between vowels", "video": "n_ng_comparison_intervocalic.mp4"},
+            "36": {"text": "s and th syllable onset", "video": "s_th_comparison_onset.mp4"},
+            "35": {"text": "s and th between vowels", "video": "s_th_comparison_intervocalic.mp4"},
+            "38": {"text": "z and th syllable onset", "video": "z_dh_comparison_onset.mp4"},
+            "37": {"text": "z and th between vowels", "video": "z_dh_comparison_intervocalic.mp4"},
+            "34": {"text": "s and sh syllable onset", "video": "s_sh_comparison_onset.mp4"},
+            "33": {"text": "s and hy syllable onset", "video": "s_hj_comparison_onset.mp4"},
+            "32": {"text": "s and hy between vowels", "video": "s_hj_comparison_intervocalic.mp4"},
+            "89": {"text": "ch and sh syllable onset", "video": "ch_sh_comparison_onset-new.mp4"},
+            "90": {"text": "ch and sh between vowels", "video": "ch_sh_comparison_intervocalic-new.mp4"},
+            "91": {"text": "j and zh syllable onset", "video": "j_zh_comparison_onset-new.mp4"},
+            "92": {"text": "j and zh between vowels", "video": "j_zh_comparison_intervocalic-new.mp4"},
+            "44": {"text": "b and glottal stop between vowels", "video": "b_glot_comparison_intervocalic.mp4"},
+            "46": {"text": "p and glottal stop syllable onset", "video": "p_glot_comparison_onset.mp4"},
+            "45": {"text": "p and glottal stop between vowels", "video": "p_glot_comparison_intervocalic.mp4"},
+            "48": {"text": "s and pharyngeal sound syllable onset", "video": "s_phar_comparison_onset.mp4"},
+            "47": {"text": "s and pharyngeal sound between vowels", "video": "s_phar_comparison_intervocalic.mp4"},
+            "52": {"text": "f and wh syllable onset", "video": "f_wh_comparison_onset.mp4"},
+            "51": {"text": "f and wh between vowels", "video": "f_wh_comparison_intervocalic.mp4"},
+            "79": {"text": "th and f syllable onset", "video": "th_f_comparison_onset.mp4"},
+            "80": {"text": "th and f between vowels", "video": "th_f_comparison_intervocalic.mp4"},
+            "81": {"text": "th and v syllable onset", "video": "th_v_comparison_onset-new.mp4"},
+            "82": {"text": "th and v between vowels", "video": "th_v_comparison_intervocalic-new.mp4"},
+            "49": {"text": "l and y between vowels", "video": "l_j_comparison_intervocalic.mp4"},
+            "50": {"text": "r and y between vowels", "video": "r_j_comparison_intervocalic.mp4"},
+            "67": {"text": "r and w syllable onset", "video": "r_w_comparison_onset.mp4"},
+            "68": {"text": "r and w between vowels", "video": "r_w_comparison_intervocalic.mp4"},
+            "69": {"text": "f and w syllable onset", "video": "f_w_comparison_onset.mp4"},
+            "70": {"text": "f and w between vowels", "video": "f_w_comparison_intervocalic.mp4"},
+            "71": {"text": "v and w syllable onset", "video": "v_w_comparison_onset-new.mp4"},
+            "72": {"text": "v and w between vowels", "video": "v_w_comparison_intervocalic-new.mp4"},
+            "73": {"text": "s and y syllable onset", "video": "s_y_comparison_onset.mp4"},
+            "74": {"text": "s and y between vowels", "video": "s_y_comparison_intervocalic.mp4"},
+            "75": {"text": "z and y syllable onset", "video": "z_y_comparison_onset.mp4"},
+            "76": {"text": "z and y between vowels", "video": "z_y_comparison_intervocalic.mp4"},
+            "77": {"text": "sh and y syllable onset", "video": "sh_y_comparison_onset.mp4"},
+            "78": {"text": "sh and y between vowels", "video": "sh_y_comparison_intervocalic.mp4"},
+            "53": {"text": "r and l between vowels", "video": "r_l_comparison_intervocalic.mp4"},
+            "99": {"text": "s and t between vowels", "video": "s_t_comparison_intervocalic.mp4"},
+            "100": {"text": "s and t syllable onset", "video": "s_t_comparison_onset.mp4"},
+            "101": {"text": "sh and t between vowels", "video": "sh_t_comparison_intervocalic.mp4"},
+            "102": {"text": "sh and t syllable onset", "video": "sh_t_comparison_onset.mp4"},
+            "103": {"text": "ch and t between vowels", "video": "ch_t_comparison_intervocalic-new.mp4"},
+            "104": {"text": "ch and t syllable onset", "video": "ch_t_comparison_onset-new.mp4"},
+            "55": {"text": "f and b syllable onset", "video": "f_b_comparison_onset.mp4"},
+            "54": {"text": "f and b between vowels", "video": "f_b_comparison_intervocalic.mp4"},
+            "57": {"text": "z and d syllable onset", "video": "z_d_comparison_onset.mp4"},
+            "56": {"text": "z and d between vowels", "video": "z_d_comparison_intervocalic.mp4"},
+            "83": {"text": "v and b syllable onset", "video": "v_b_comparison_onset-new.mp4"},
+            "84": {"text": "v and b between vowels", "video": "v_b_comparison_intervocalic-new.mp4"},
+            "85": {"text": "f and p syllable onset", "video": "f_p_comparison_onset.mp4"},
+            "86": {"text": "f and p between vowels", "video": "f_p_comparison_intervocalic.mp4"},
+            "87": {"text": "j and d syllable onset", "video": "j_d_comparison_onset-new.mp4"},
+            "88": {"text": "j and d between vowels", "video": "j_d_comparison_intervocalic-new.mp4"}
+        };
         let mediaRecorder;
         let audioChunks = [];
         let isRecording = false;
@@ -1099,28 +1198,95 @@
             } else {
                 data.mispronounced_words.forEach((item, index) => {
                     const div = document.createElement('div');
-                    div.className = "flex items-center gap-4 bg-error/10 p-3 rounded-xl border border-error/20 cursor-pointer hover:bg-error/20 transition-all";
+                    div.className = "flex flex-col bg-error/10 p-3 rounded-xl border border-error/20 cursor-pointer hover:bg-error/20 transition-all";
                     div.onclick = () => animateArticulators(item.incorrect_articulator || 'neutral', item.correct_articulator || 'tongue-tip');
+                    
+                    let locId = "";
+                    let videoHtml = "";
+                    let playButtonHtml = "";
+                    
+                    if (item.speechstar_url) {
+                        const match = item.speechstar_url.match(/location=(\d+)/);
+                        if (match) {
+                            locId = match[1];
+                            const mapEntry = SPEECHSTAR_MAP[locId];
+                            if (mapEntry && mapEntry.video) {
+                                playButtonHtml = `
+                                    <button class="text-primary text-[10px] font-bold hover:underline flex items-center gap-0.5" onclick="toggleVideoPlayer(event, ${index})">
+                                        <span class="material-symbols-outlined text-[12px]" id="play-icon-${index}">play_circle</span> <span id="play-text-${index}">Play Video</span>
+                                    </button>
+                                `;
+                                videoHtml = `
+                                    <div id="video-container-${index}" class="hidden w-full mt-3 rounded-lg overflow-hidden border border-outline-variant bg-black">
+                                        <video src="https://speechstar.ac.uk/video/${mapEntry.video}" controls class="w-full max-h-[200px]" preload="none"></video>
+                                    </div>
+                                `;
+                            }
+                        }
+                    }
+
                     div.innerHTML = `
-                        <div class="text-center px-3 py-1 bg-surface-container-low rounded-lg shrink-0 border border-outline-variant min-w-[70px]">
-                            <p class="text-[9px] text-on-surface-variant/60 uppercase font-bold">Expected</p>
-                            <p class="font-body-md font-bold text-secondary text-xs">${item.word}</p>
-                            <p class="text-[9px] text-on-surface-variant/60 uppercase font-bold mt-1">Heard</p>
-                            <p class="font-body-md font-bold text-error text-xs">${item.how_heard}</p>
-                        </div>
-                        <div class="flex-1 min-w-0">
-                            <p class="font-label-md text-sm text-on-surface font-bold truncate">${item.word}</p>
-                            <p class="text-xs text-on-surface-variant mt-1 line-clamp-2">${item.placement_guide}</p>
-                            <div class="flex gap-2 mt-2">
-                                <a class="text-primary text-[10px] font-bold hover:underline flex items-center gap-0.5" href="${item.speechstar_url || 'https://speechstar.ac.uk/'}" target="_blank" onclick="event.stopPropagation();">
-                                    <span class="material-symbols-outlined text-xs">open_in_new</span> View STAR
-                                </a>
+                        <div class="flex items-center gap-4 w-full">
+                            <div class="text-center px-3 py-1 bg-surface-container-low rounded-lg shrink-0 border border-outline-variant min-w-[70px]">
+                                <p class="text-[9px] text-on-surface-variant/60 uppercase font-bold">Expected</p>
+                                <p class="font-body-md font-bold text-secondary text-xs">${item.word}</p>
+                                <p class="text-[9px] text-on-surface-variant/60 uppercase font-bold mt-1">Heard</p>
+                                <p class="font-body-md font-bold text-error text-xs">${item.how_heard}</p>
+                            </div>
+                            <div class="flex-1 min-w-0">
+                                <p class="font-label-md text-sm text-on-surface font-bold truncate">${item.word}</p>
+                                <p class="text-xs text-on-surface-variant mt-1 line-clamp-2">${item.placement_guide}</p>
+                                <div class="flex gap-3 mt-2">
+                                    <a class="text-primary text-[10px] font-bold hover:underline flex items-center gap-0.5" href="${item.speechstar_url || 'https://speechstar.ac.uk/'}" target="_blank" onclick="event.stopPropagation();">
+                                        <span class="material-symbols-outlined text-xs">open_in_new</span> View STAR
+                                    </a>
+                                    ${playButtonHtml}
+                                </div>
                             </div>
                         </div>
+                        ${videoHtml}
                     `;
                     container.appendChild(div);
                     if (index === 0) animateArticulators(item.incorrect_articulator || 'neutral', item.correct_articulator || 'tongue-tip');
                 });
+            }
+        }
+
+        window.toggleVideoPlayer = function(event, index) {
+            event.stopPropagation(); 
+            const container = document.getElementById(`video-container-${index}`);
+            const playIcon = document.getElementById(`play-icon-${index}`);
+            const playText = document.getElementById(`play-text-${index}`);
+            if (container) {
+                const isHidden = container.classList.contains('hidden');
+                
+                document.querySelectorAll('[id^="video-container-"]').forEach(c => {
+                    if (c.id !== `video-container-${index}`) {
+                        c.classList.add('hidden');
+                        const v = c.querySelector('video');
+                        if (v) v.pause();
+                        
+                        const idx = c.id.split('-').pop();
+                        const otherIcon = document.getElementById(`play-icon-${idx}`);
+                        const otherText = document.getElementById(`play-text-${idx}`);
+                        if (otherIcon) otherIcon.textContent = 'play_circle';
+                        if (otherText) otherText.textContent = 'Play Video';
+                    }
+                });
+
+                if (isHidden) {
+                    container.classList.remove('hidden');
+                    const video = container.querySelector('video');
+                    if (video) video.play();
+                    if (playIcon) playIcon.textContent = 'pause_circle';
+                    if (playText) playText.textContent = 'Pause';
+                } else {
+                    container.classList.add('hidden');
+                    const video = container.querySelector('video');
+                    if (video) video.pause();
+                    if (playIcon) playIcon.textContent = 'play_circle';
+                    if (playText) playText.textContent = 'Play Video';
+                }
             }
         }
 
